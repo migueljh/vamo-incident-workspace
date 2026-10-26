@@ -30,7 +30,7 @@ export function IncidentCard({ incident, data, selected, onSelect }: IncidentCar
       onClick={() => onSelect(incident.id)}
       aria-current={selected ? 'true' : undefined}
       className={cn(
-        'flex w-full flex-col gap-1 rounded-lg border px-3 py-2.5 text-left transition-[color,background-color,border-color,box-shadow,transform] duration-(--duration-fast) ease-out outline-none focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-98',
+        'flex w-full flex-col gap-1 rounded-lg border px-3 py-2.5 text-left transition-[color,background-color,border-color,box-shadow,scale] duration-(--duration-fast) ease-out outline-none focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-98',
         isOpen ? 'bg-card hover:border-line-hover' : 'border-line-soft bg-surface-subtle hover:border-line-hover',
         selected && 'border-foreground ring-1 ring-foreground hover:border-foreground',
       )}
