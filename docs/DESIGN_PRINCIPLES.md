@@ -32,6 +32,7 @@ Target width: 1280 to 1440px. Below 1280px, route context moves under the timeli
 6. **Time with context.** Relative time first ("18 min ago", "closes in 30 min"), absolute time second in the customer's time zone ("12:30 PM ET").
 7. **Calm by default, loud only when it matters.** Light, neutral UI. One accent color reserved for urgency.
 8. **Keyboard navigation (if time allows).** j/k to move through the queue, shortcuts to assign and reply.
+9. **Motion explains change.** Every interactive element has hover, focus and pressed states. Things that open, close, move or change state animate briefly (150 to 250 ms, ease-out) so the agent sees what changed. No decorative or looping animation. Respect prefers-reduced-motion.
 
 ## Visual rules
 

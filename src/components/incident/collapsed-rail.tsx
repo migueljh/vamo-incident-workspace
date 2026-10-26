@@ -20,7 +20,7 @@ export function CollapsedRail({ incident, severity, onExpand }: CollapsedRailPro
         <button
           type="button"
           onClick={onExpand}
-          className="flex rotate-180 items-center gap-2 rounded-sm font-semibold outline-none [writing-mode:vertical-rl] focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="flex rotate-180 items-center gap-2 rounded-sm font-semibold transition-[color,background-color,border-color,box-shadow,transform] duration-(--duration-fast) ease-out outline-none [writing-mode:vertical-rl] hover:text-soft-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           {incident.subject} · {incident.title}
           {severity && <SeverityBadge severity={severity} />}
