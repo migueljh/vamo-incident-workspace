@@ -2,7 +2,7 @@
 
 Incident Workspace: a prototype that helps Vamo's support team see one delivery problem as one incident, with full context and a suggested next step.
 
-Live demo: TBD
+Live demo: https://vamo-incident-workspace.vercel.app/
 
 ## How to run
 
