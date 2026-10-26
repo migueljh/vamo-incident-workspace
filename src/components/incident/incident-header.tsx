@@ -8,6 +8,7 @@ import { getIncidentContacts, getRoute } from '@/domain/lookup'
 import { countUnanswered, formatContactsWaiting, getSeverity, getUrgencyReason } from '@/domain/priority'
 import { formatEt } from '@/domain/time'
 import type { Incident, WorkspaceData } from '@/domain/types'
+import { capitalize } from '@/lib/capitalize'
 import { cn } from '@/lib/utils'
 
 interface IncidentHeaderProps {
@@ -46,7 +47,7 @@ export function IncidentHeader({ incident, data, onCollapse }: IncidentHeaderPro
         {reasonParts.map((part, index) => (
           <Fragment key={part.kind}>
             <span className={cn(part.kind === 'deadline' && isLoud && 'text-critical-strong')}>
-              {index === 0 ? part.text.charAt(0).toUpperCase() + part.text.slice(1) : part.text}
+              {index === 0 ? capitalize(part.text) : part.text}
             </span>
             {part.kind === 'deadline' && part.at && (
               <span className="font-mono text-xs text-muted-foreground">{formatEt(part.at)}</span>

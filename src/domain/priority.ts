@@ -1,4 +1,5 @@
 // Severity, deadlines and queue order. Rules follow docs/BRIEF.md exactly.
+import { capitalize } from '@/lib/capitalize'
 import { pluralize } from '@/lib/pluralize'
 import { CRITICAL_PENDING_STOPS, SEVERITY_ORDER, STATUS_ORDER } from './constants'
 import { getIncidentContacts, getRoute } from './lookup'
@@ -116,8 +117,7 @@ export function getUrgencyReason(
 
 /** "9 stops at risk · window closes in 30 min", capitalized for display. */
 export function formatReason(parts: ReasonPart[]): string {
-  const text = parts.map((part) => part.text).join(' · ')
-  return text.charAt(0).toUpperCase() + text.slice(1)
+  return capitalize(parts.map((part) => part.text).join(' · '))
 }
 
 interface SortKey {

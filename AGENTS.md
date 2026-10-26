@@ -55,6 +55,7 @@ src/
   domain/lookup.ts        # incident → route, contacts, flags
   state/                  # incident reducer + context
   index.css               # design tokens (colors, fonts, type scale, radii): the only place for hex values
+  components/app-header.tsx  # top bar: product, fixed clock, current agent
   components/ui/          # shadcn primitives
   components/ds/          # design system: SeverityBadge, Tag, StatusBadge, SectionLabel, TimeStamp, Panel, RecipientChip, ProgressBar (no business logic)
   components/queue/       # incident queue
