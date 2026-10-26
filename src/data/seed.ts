@@ -225,6 +225,10 @@ const INCIDENTS: Incident[] = [
     urgency: [{ kind: 'stops_at_risk' }, { kind: 'deadline' }],
     groupingReason: 'Grouped because all 4 contacts are linked to active stops on Route 14.',
     replyTemplate: ROUTE_14_REPLY,
+    followUpStep: {
+      label: 'Confirm driver is moving again by 12:15 PM ET.',
+      reason: "Driver said back on the road in ~15 min. Stop 7's window closes at 12:30 PM ET.",
+    },
     activity: [],
   },
   {

@@ -30,12 +30,8 @@ export function Queue() {
             No open incidents. Nice work.
           </p>
         )}
-        <ul
-          className={cn(
-            'grid gap-2 px-3 pb-4',
-            panelCollapsed && 'grid-cols-[repeat(auto-fill,minmax(25rem,1fr))]',
-          )}
-        >
+        {/* One column even when collapsed, so the queue still reads top to bottom by urgency. */}
+        <ul className="grid gap-2 px-3 pb-4">
           {incidents.map((incident) => (
             <li key={incident.id}>
               <IncidentCard

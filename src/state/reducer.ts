@@ -69,7 +69,7 @@ function sendReply(state: WorkspaceState, action: Extract<WorkspaceAction, { typ
   const next = updateIncident(state, incident.id, (current) => ({
     ...current,
     status: 'monitoring',
-    nextStep: getFollowUpStep(action.at, recipientIds.length, isDriverStall),
+    nextStep: current.followUpStep ?? getFollowUpStep(action.at, recipientIds.length, isDriverStall),
     activity: withActivity(current, entries),
   }))
   return {

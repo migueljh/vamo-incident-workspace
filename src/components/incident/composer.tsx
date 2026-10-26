@@ -59,14 +59,15 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
   function handleSend() {
     onSend?.({ contactIds: selectedIds, reply, note })
     setNote('')
+    setReply('')
     setExcludedIds([])
-    setConfirmation(`Sent to ${pluralize(selectedIds.length, 'contact')} (simulated) · logged to timeline`)
+    setConfirmation(`Sent to ${pluralize(selectedIds.length, 'contact')} (simulated)`)
   }
 
   function handleAddNote() {
     onAddNote?.(note)
     setNote('')
-    setConfirmation('Note added to timeline')
+    setConfirmation('Note added')
   }
 
   function toggleRecipient(contactId: string) {
@@ -79,10 +80,20 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
   const recipients = getIncidentContacts(data, incident).filter((contact) => !contact.answered)
   const selectedIds = recipients.filter((contact) => !excludedIds.includes(contact.id)).map((contact) => contact.id)
   const isLocked = incident.status === 'resolved'
+  const canReply = recipients.length > 0 && !isLocked
   const sendBlocker = getSendBlocker(recipients.length, selectedIds.length, reply)
-  const canSend = Boolean(onSend) && !isLocked && sendBlocker === null
-  const sendLabel =
-    recipients.length > 0 ? `Send to ${pluralize(selectedIds.length, 'contact')} (simulated)` : 'Send (simulated)'
+  const canSend = Boolean(onSend) && canReply && sendBlocker === null
+  const noteHint = isLocked
+    ? 'Incident resolved.'
+    : canReply
+      ? 'Saved with the reply, or add it now.'
+      : 'Add it to the timeline.'
+  const confirmationText = confirmation && (
+    <p role="status" className="inline-flex items-center gap-1.5 text-xs font-medium">
+      <Check aria-hidden className="size-3.5" />
+      {confirmation}
+    </p>
+  )
 
   return (
     <div className="flex flex-col gap-2.5 border-t bg-card px-5 pt-3 pb-3.5">
@@ -90,73 +101,71 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
         <label htmlFor={noteId} className="w-18.5 shrink-0 pt-1.75 text-xs font-semibold text-soft-foreground">
           Internal note
         </label>
-        <Textarea
-          id={noteId}
-          ref={noteRef}
-          rows={1}
-          value={note}
-          onChange={(event) => setNote(event.target.value)}
-          placeholder="What happened?"
-          disabled={isLocked}
-          className="min-h-8.5 resize-none bg-surface-subtle px-2.5 py-1.75 text-sm focus-visible:bg-card md:text-sm"
-        />
-      </div>
-
-      <div className="flex items-start gap-2.5">
-        <label htmlFor={replyId} className="w-18.5 shrink-0 pt-1.25 text-xs font-semibold text-soft-foreground">
-          Reply to
-        </label>
-        <div className="flex min-w-0 flex-1 flex-col gap-2">
-          {recipients.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
-              {recipients.map((contact) => (
-                <RecipientChip
-                  key={contact.id}
-                  name={contact.senderName ?? contact.phone}
-                  detail={getStopLabel(route, contact.linkedStopId) ?? getSourceLabel(contact.sourceRole)}
-                  selected={!excludedIds.includes(contact.id)}
-                  disabled={isLocked}
-                  onToggle={() => toggleRecipient(contact.id)}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="pt-1.25 text-xs text-muted-foreground">All contacts answered.</p>
-          )}
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
           <Textarea
-            id={replyId}
-            rows={2}
-            value={reply}
-            onChange={(event) => setReply(event.target.value)}
+            id={noteId}
+            ref={noteRef}
+            rows={1}
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+            placeholder="What happened?"
             disabled={isLocked}
-            className="min-h-0 resize-none bg-surface-subtle px-2.5 py-2 text-sm leading-normal focus-visible:bg-card md:text-sm"
+            className="min-h-8.5 resize-none bg-surface-subtle px-2.5 py-1.75 text-sm focus-visible:bg-card md:text-sm"
           />
+          <p className="text-xs text-muted-foreground">{noteHint}</p>
         </div>
+        <Button variant="outline" size="md" onClick={handleAddNote} disabled={!onAddNote || isLocked || !note.trim()}>
+          Add note
+        </Button>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2.5 pl-21">
-        {isLocked ? (
-          <p className="text-xs text-soft-foreground">Resolved. Actions are disabled.</p>
-        ) : confirmation ? (
-          <p role="status" className="inline-flex items-center gap-1.5 text-xs font-medium">
-            <Check aria-hidden className="size-3.5" />
-            {confirmation}
-          </p>
-        ) : (
-          <p className="text-xs text-soft-foreground">Note is internal. Reply goes out by SMS.</p>
-        )}
-        <div className="flex items-center gap-2">
-          {sendBlocker && recipients.length > 0 && (
-            <span className="text-xs text-soft-foreground">{sendBlocker}</span>
-          )}
-          <Button variant="outline" size="md" onClick={handleAddNote} disabled={!onAddNote || isLocked || !note.trim()}>
-            Add note
-          </Button>
-          <Button size="md" onClick={handleSend} disabled={!canSend} className="font-semibold">
-            {sendLabel}
-          </Button>
+      {canReply ? (
+        <>
+          <div className="flex items-start gap-2.5">
+            <label htmlFor={replyId} className="w-18.5 shrink-0 pt-1.25 text-xs font-semibold text-soft-foreground">
+              Reply to
+            </label>
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
+              <div className="flex flex-wrap gap-1.5">
+                {recipients.map((contact) => (
+                  <RecipientChip
+                    key={contact.id}
+                    name={contact.senderName ?? contact.phone}
+                    detail={getStopLabel(route, contact.linkedStopId) ?? getSourceLabel(contact.sourceRole)}
+                    selected={!excludedIds.includes(contact.id)}
+                    onToggle={() => toggleRecipient(contact.id)}
+                  />
+                ))}
+              </div>
+              <Textarea
+                id={replyId}
+                rows={2}
+                value={reply}
+                onChange={(event) => setReply(event.target.value)}
+                className="min-h-0 resize-none bg-surface-subtle px-2.5 py-2 text-sm leading-normal focus-visible:bg-card md:text-sm"
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2.5 pl-21">
+            {confirmation ? (
+              confirmationText
+            ) : (
+              <p className="text-xs text-soft-foreground">Note is internal. Reply goes out by SMS.</p>
+            )}
+            <div className="flex items-center gap-2">
+              {sendBlocker && <span className="text-xs text-soft-foreground">{sendBlocker}</span>}
+              <Button size="md" onClick={handleSend} disabled={!canSend} className="font-semibold">
+                Send to {pluralize(selectedIds.length, 'contact')} (simulated)
+              </Button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pl-21">
+          <p className="text-xs text-soft-foreground">All contacts answered.</p>
+          {confirmationText}
         </div>
-      </div>
+      )}
     </div>
   )
 }

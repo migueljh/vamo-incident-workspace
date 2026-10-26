@@ -118,6 +118,9 @@ describe('golden path: assign → call → note → send', () => {
     expect(hero(state).status).toBe('monitoring')
     expect(hero(state).owner).toBe('Ana')
     expect(hero(state).nextStep.label).toBe('Confirm driver is moving again by 12:15 PM ET.')
+    expect(hero(state).nextStep.reason).toBe(
+      "Driver said back on the road in ~15 min. Stop 7's window closes at 12:30 PM ET.",
+    )
     expect(hero(state).nextStep.action).toBeUndefined()
   })
 
