@@ -19,9 +19,13 @@ export function PendingStopRow({ stop }: PendingStopRowProps) {
         Window <span className="font-mono">{formatEtWindow(stop.windowStart, stop.windowEnd)}</span>
       </span>
       {/* Lateness is spelled out, not just colored. */}
-      <span className={cn('text-xs', lateMinutes > 0 && 'font-semibold text-critical-strong')}>
-        ETA {formatEt(stop.eta)} · {lateMinutes > 0 ? `Late ${lateMinutes} min` : 'On time'}
-      </span>
+      {stop.eta ? (
+        <span className={cn('text-xs', lateMinutes > 0 && 'font-semibold text-critical-strong')}>
+          ETA {formatEt(stop.eta)} · {lateMinutes > 0 ? `Late ${lateMinutes} min` : 'On time'}
+        </span>
+      ) : (
+        <span className="text-xs text-muted-foreground">ETA unavailable</span>
+      )}
     </li>
   )
 }

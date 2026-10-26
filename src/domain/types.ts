@@ -54,7 +54,8 @@ export interface Stop {
   address: string
   windowStart: string
   windowEnd: string
-  eta: string
+  /** Missing when the routing engine has no estimate. */
+  eta?: string
   status: StopStatus
   podPhotoUrl?: string
 }

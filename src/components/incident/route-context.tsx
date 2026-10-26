@@ -16,7 +16,7 @@ interface RouteContextProps {
   className?: string
 }
 
-/** Driver status, progress and the next pending stops. Only shown for routes with stop detail. */
+/** Driver status, progress and the next pending stops. Missing data says "No data" instead of hiding. */
 export function RouteContext({ route, className }: RouteContextProps) {
   const [showAllStops, setShowAllStops] = useState(false)
 
@@ -33,28 +33,34 @@ export function RouteContext({ route, className }: RouteContextProps) {
         <Panel className="gap-1 px-3 py-2.5">
           <SectionLabel>Driver</SectionLabel>
           <span className="font-semibold">{route.driver.name}</span>
-          {route.lastLocationAt && (
+          {route.lastLocationAt ? (
             <span className="text-soft-foreground">
               Last location {formatRelative(route.lastLocationAt)} ·{' '}
               <span className="font-mono text-xs">{formatEt(route.lastLocationAt)}</span>
             </span>
+          ) : (
+            <span className="text-soft-foreground">Last location · No data</span>
           )}
-          {ping && (
+          {ping ? (
             <span className={ping.responded ? 'text-soft-foreground' : 'text-critical-strong'}>
               Last app ping {formatRelative(ping.at)} · <span className="font-mono text-xs">{formatEt(ping.at)}</span>
               {ping.responded ? ' · responded' : ' · no response'}
             </span>
+          ) : (
+            <span className="text-soft-foreground">Last app ping · No data</span>
           )}
         </Panel>
       )}
 
-      <Panel className="gap-1.5 px-3 py-2.5">
-        <SectionLabel>Progress</SectionLabel>
-        <span className="font-semibold">
-          {progress.delivered} of {progress.total} stops delivered · {progress.pending} pending
-        </span>
-        <ProgressBar value={progress.delivered} max={progress.total} label="Stops delivered" />
-      </Panel>
+      {progress.total > 0 && (
+        <Panel className="gap-1.5 px-3 py-2.5">
+          <SectionLabel>Progress</SectionLabel>
+          <span className="font-semibold">
+            {progress.delivered} of {progress.total} stops delivered · {progress.pending} pending
+          </span>
+          <ProgressBar value={progress.delivered} max={progress.total} label="Stops delivered" />
+        </Panel>
+      )}
 
       {pendingStops.length > 0 && (
         <Panel>

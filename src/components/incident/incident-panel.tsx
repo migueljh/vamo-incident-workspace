@@ -3,7 +3,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { getIncident, getRoute } from '@/domain/lookup'
 import { getCallNotePrefix } from '@/domain/next-step'
 import { getSeverity } from '@/domain/priority'
-import { hasRouteDetail } from '@/domain/route'
+import { hasRouteContext } from '@/domain/route'
 import { NOW } from '@/domain/time'
 import { getTimeline } from '@/domain/timeline'
 import type { Incident } from '@/domain/types'
@@ -71,7 +71,7 @@ function IncidentView({ incident }: IncidentViewProps) {
 
   const { data } = state
   const route = getRoute(data, incident.routeId)
-  const showRoute = hasRouteDetail(route)
+  const showRoute = hasRouteContext(route)
   // Unknown numbers can't be acted on until they're linked to an order.
   const canAct = getSeverity(incident, data) !== 'needs_linking'
 

@@ -26,8 +26,9 @@ export function getStopProgress(route: Route): StopProgress {
   return { delivered, pending: getPendingStops(route).length, total: route.stops.length }
 }
 
-/** Minutes the ETA lands after the window closes; 0 when on time. */
+/** Minutes the ETA lands after the window closes; 0 when on time or without an ETA. */
 export function getLateMinutes(stop: Stop): number {
+  if (!stop.eta) return 0
   return Math.max(0, minutesBetween(stop.windowEnd, stop.eta))
 }
 
@@ -37,9 +38,9 @@ export function getEarliestPendingWindowEnd(route: Route): string | undefined {
   return ends.sort(compareTimes)[0]
 }
 
-/** Routes with stop detail get the full route context panel. */
-export function hasRouteDetail(route: Route | undefined): route is Route {
-  return route !== undefined && route.stops.length > 0
+/** Routes with a known driver or stop detail get the route context panel. */
+export function hasRouteContext(route: Route | undefined): route is Route {
+  return route !== undefined && (route.driver !== undefined || route.stops.length > 0)
 }
 
 /** "Stop 7" for a contact linked to a stop on this route. */
