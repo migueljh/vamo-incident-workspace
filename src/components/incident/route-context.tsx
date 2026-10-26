@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Panel } from '@/components/ds/panel'
 import { ProgressBar } from '@/components/ds/progress-bar'
 import { SectionLabel } from '@/components/ds/section-label'
+import { Button } from '@/components/ui/button'
 import { getPendingStops, getStopProgress } from '@/domain/route'
 import { formatEt, formatRelative } from '@/domain/time'
 import type { Route } from '@/domain/types'
@@ -16,6 +18,8 @@ interface RouteContextProps {
 
 /** Driver status, progress and the next pending stops. Only shown for routes with stop detail. */
 export function RouteContext({ route, className }: RouteContextProps) {
+  const [showAllStops, setShowAllStops] = useState(false)
+
   const progress = getStopProgress(route)
   const pendingStops = getPendingStops(route)
   const hiddenStops = pendingStops.length - VISIBLE_STOPS
@@ -58,11 +62,23 @@ export function RouteContext({ route, className }: RouteContextProps) {
             <SectionLabel>Next pending stops</SectionLabel>
           </div>
           <ul>
-            {pendingStops.slice(0, VISIBLE_STOPS).map((stop) => (
+            {pendingStops.slice(0, showAllStops ? undefined : VISIBLE_STOPS).map((stop) => (
               <PendingStopRow key={stop.id} stop={stop} />
             ))}
           </ul>
-          {hiddenStops > 0 && <p className="px-3 py-2 text-xs text-muted-foreground">+{hiddenStops} more stops</p>}
+          {hiddenStops > 0 && (
+            <div className="px-1.5 py-1">
+              <Button
+                variant="link"
+                size="xs"
+                aria-expanded={showAllStops}
+                onClick={() => setShowAllStops((shown) => !shown)}
+                className="text-foreground underline underline-offset-2"
+              >
+                {showAllStops ? 'Show less' : `+${hiddenStops} more stops`}
+              </Button>
+            </div>
+          )}
         </Panel>
       )}
     </section>
