@@ -1,8 +1,18 @@
+import { AppHeader } from '@/components/app-header'
+import { Queue } from '@/components/queue/queue'
+import { WorkspaceProvider } from '@/state/workspace-provider'
+
 function App() {
   return (
-    <main className="flex min-h-svh items-center justify-center bg-background text-foreground">
-      <h1 className="text-2xl font-semibold">Vamo Incident Workspace</h1>
-    </main>
+    <WorkspaceProvider>
+      <div className="flex h-svh flex-col overflow-hidden">
+        <AppHeader />
+        <div className="flex min-h-0 flex-1">
+          <Queue />
+          <main className="min-w-0 flex-1 bg-card" />
+        </div>
+      </div>
+    </WorkspaceProvider>
   )
 }
 
