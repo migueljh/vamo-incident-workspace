@@ -22,7 +22,7 @@ export function Timeline({ events }: TimelineProps) {
         <h3 id="timeline-heading" className="text-base font-semibold">
           Timeline
         </h3>
-        <span className="text-muted-foreground">Board flags and messages · oldest first</span>
+        <span className="text-muted-foreground">Oldest first</span>
       </div>
       <ol className="px-5 py-1.5">
         {events.map((event, index) => (

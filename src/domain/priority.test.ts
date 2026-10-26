@@ -4,6 +4,7 @@ import {
   formatContactsWaiting,
   formatReason,
   getDeadline,
+  getGroupingReason,
   getSeverity,
   getUrgencyReason,
   sortIncidents,
@@ -58,7 +59,6 @@ function makeIncident(id: string, overrides: Partial<Incident> = {}): Incident {
     status: 'open',
     nextStep: { label: 'Do something', reason: 'Because' },
     urgency: [],
-    groupingReason: 'Grouped by route.',
     activity: [],
     ...overrides,
   }
@@ -215,5 +215,13 @@ describe('sortIncidents', () => {
       ],
     })
     expect(sortIncidents(data).map((incident) => incident.id)).toEqual(['two', 'one'])
+  })
+})
+
+describe('getGroupingReason', () => {
+  it('shows only when 2 or more signals were grouped', () => {
+    const reason = 'Grouped because all contacts share a route.'
+    expect(getGroupingReason(makeIncident('i', { contactIds: ['a'], groupingReason: reason }))).toBeUndefined()
+    expect(getGroupingReason(makeIncident('i', { contactIds: ['a'], flagIds: ['f'], groupingReason: reason }))).toBe(reason)
   })
 })

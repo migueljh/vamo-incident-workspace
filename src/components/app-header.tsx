@@ -18,6 +18,7 @@ export function AppHeader() {
           <time dateTime={NOW} className="font-mono font-medium">
             {formatEt(NOW)}
           </time>
+          <span className="rounded-sm bg-tag px-1.5 py-0.5 text-2xs text-tag-foreground">Demo clock</span>
         </div>
         <div className="flex items-center gap-2">
           <div

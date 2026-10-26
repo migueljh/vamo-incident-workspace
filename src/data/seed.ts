@@ -248,7 +248,6 @@ const INCIDENTS: Incident[] = [
     },
     deadline: { kind: 'window_closes', at: etTime('12:48') },
     urgency: [{ kind: 'waiting_since', who: 'driver', at: etTime('11:54') }, { kind: 'stops_at_risk' }],
-    groupingReason: 'Grouped because the driver is on Route 22.',
     replyTemplate:
       "Hi Luis, we're calling the customer at Stop 5 for the door code. We'll text it to you in a few minutes.",
     activity: [],
@@ -269,7 +268,6 @@ const INCIDENTS: Incident[] = [
     },
     deadline: { kind: 'driver_arrives', at: etTime('12:12') },
     urgency: [{ kind: 'deadline' }],
-    groupingReason: 'Grouped because the contact is linked to an active stop on Route 31.',
     replyTemplate:
       "Hi Sofia, thanks for letting us know. We're updating your address to apartment 4B and telling the driver before arrival.",
     activity: [],
@@ -290,7 +288,6 @@ const INCIDENTS: Incident[] = [
     },
     deadline: { kind: 'route_starts', at: etTime('12:55') },
     urgency: [{ kind: 'deadline' }],
-    groupingReason: 'Grouped because the driver is assigned to Route 40.',
     replyTemplate:
       "Hi Jamal, we're checking your route assignment now. We'll text you as soon as it shows up in the app.",
     activity: [],
@@ -310,7 +307,6 @@ const INCIDENTS: Incident[] = [
       action: 'log_step',
     },
     urgency: [{ kind: 'fact', text: 'order delivered 11:40 AM ET' }],
-    groupingReason: 'Grouped because the contact is linked to a delivered stop on Route 9.',
     replyTemplate:
       "Hi Tom, sorry about the missing bag. We're checking the bag count with the store and will get back to you shortly.",
     activity: [],
@@ -329,7 +325,6 @@ const INCIDENTS: Incident[] = [
       action: 'log_step',
     },
     urgency: [{ kind: 'fact', text: '3 delivered orders' }],
-    groupingReason: 'Grouped because the message names orders #4821, #4822 and #4830.',
     replyTemplate:
       "Hi, here are the proof-of-delivery photos for orders #4821, #4822 and #4830. Let us know if you need anything else.",
     activity: [],
@@ -347,7 +342,6 @@ const INCIDENTS: Incident[] = [
       reason: 'No matching order found for (555) 013-2291.',
     },
     urgency: [{ kind: 'fact', text: 'no matching order found' }],
-    groupingReason: 'Not grouped: the phone number matches no active route or order.',
     activity: [],
   },
 ]

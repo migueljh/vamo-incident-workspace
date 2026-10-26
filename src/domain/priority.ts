@@ -155,3 +155,9 @@ export function sortIncidents(data: WorkspaceData, now: string = NOW): Incident[
     return keyB.unanswered - keyA.unanswered
   })
 }
+
+/** The grouping line only helps when 2 or more signals (contacts + flags) were grouped. */
+export function getGroupingReason(incident: Incident): string | undefined {
+  const signals = incident.contactIds.length + incident.flagIds.length
+  return signals >= 2 ? incident.groupingReason : undefined
+}

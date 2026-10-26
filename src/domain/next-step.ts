@@ -18,7 +18,7 @@ export function getFollowUpStep(sentAt: string, recipientCount: number, isDriver
   const by = formatEt(addMinutes(sentAt, FOLLOW_UP_MINUTES))
   return {
     label: isDriverStall ? `Confirm driver is moving again by ${by}.` : `Follow up with contacts by ${by}.`,
-    reason: `Reply sent to ${pluralize(recipientCount, 'contact')} (simulated). Status is Monitoring.`,
+    reason: `Reply sent to ${pluralize(recipientCount, 'contact')} (simulated). Check back if they write again.`,
   }
 }
 
@@ -34,10 +34,10 @@ export function getStepLogText(label: string): string {
 
 /** After a simulated next step: the step stays visible, without the button. */
 export function getStepDoneStep(label: string): NextStep {
-  return { label, reason: 'Done (simulated). Reply to contacts to move to Monitoring.' }
+  return { label, reason: 'Done (simulated). Reply to let the contact know.' }
 }
 
 /** After "Mark resolved": nothing left to do. */
 export function getResolvedStep(): NextStep {
-  return { label: 'Resolved.', reason: 'No further action needed. Actions are disabled.' }
+  return { label: 'Resolved.', reason: 'No further action needed.' }
 }

@@ -145,7 +145,8 @@ export interface Incident {
   nextStep: NextStep
   deadline?: IncidentDeadline
   urgency: UrgencySignal[]
-  groupingReason: string
+  /** Why several signals were grouped. Shown only when there are 2 or more. */
+  groupingReason?: string
   /** Next step after replying, when the seed knows better than the generic follow-up. */
   followUpStep?: NextStep
   /** Default reply for the composer. The unknown number has none: it isn't actionable. */

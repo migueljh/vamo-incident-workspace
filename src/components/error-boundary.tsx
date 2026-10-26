@@ -28,7 +28,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       <div className="flex h-svh items-center justify-center bg-background p-6">
         <Panel role="alert" className="max-w-sm items-start gap-3 px-5 py-4">
           <p className="text-base font-semibold">Something went wrong.</p>
-          <p className="text-soft-foreground">Reload to restart the demo. All data is mocked, so nothing is lost.</p>
+          <p className="text-soft-foreground">Reload to restart the demo.</p>
           <Button size="md" onClick={() => window.location.reload()}>
             Reload
           </Button>

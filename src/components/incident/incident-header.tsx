@@ -5,7 +5,13 @@ import { StatusBadge } from '@/components/ds/status-badge'
 import { Button } from '@/components/ui/button'
 import { formatOwner } from '@/domain/constants'
 import { getIncidentContacts, getRoute } from '@/domain/lookup'
-import { countUnanswered, formatContactsWaiting, getSeverity, getUrgencyReason } from '@/domain/priority'
+import {
+  countUnanswered,
+  formatContactsWaiting,
+  getGroupingReason,
+  getSeverity,
+  getUrgencyReason,
+} from '@/domain/priority'
 import { formatEt } from '@/domain/time'
 import type { Incident, WorkspaceData } from '@/domain/types'
 import { capitalize } from '@/lib/capitalize'
@@ -23,6 +29,7 @@ export function IncidentHeader({ incident, data, onCollapse }: IncidentHeaderPro
   const reasonParts = getUrgencyReason(incident, data)
   const contactsWaiting = formatContactsWaiting(countUnanswered(getIncidentContacts(data, incident)))
   const isLoud = severity === 'critical' && incident.status === 'open'
+  const groupingReason = getGroupingReason(incident)
 
   return (
     <header className="flex flex-col gap-1.5 border-b border-line-soft px-5 pt-3.5 pb-3">
@@ -59,7 +66,7 @@ export function IncidentHeader({ incident, data, onCollapse }: IncidentHeaderPro
         ))}
         <span>{contactsWaiting}</span>
       </p>
-      <p className="text-xs text-soft-foreground">{incident.groupingReason}</p>
+      {groupingReason && <p className="text-xs text-soft-foreground">{groupingReason}</p>}
     </header>
   )
 }
