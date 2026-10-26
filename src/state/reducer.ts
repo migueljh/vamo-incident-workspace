@@ -2,7 +2,7 @@
 import { HERO_INCIDENT_ID, SEED } from '@/data/seed'
 import { CURRENT_AGENT } from '@/domain/constants'
 import { getIncident, getRoute } from '@/domain/lookup'
-import { getCallingDriverStep, getFollowUpStep } from '@/domain/next-step'
+import { getCallingDriverStep, getFollowUpStep, getStepDoneStep, getStepLogText } from '@/domain/next-step'
 import type { AgentActivity, Incident, WorkspaceData } from '@/domain/types'
 import type { WorkspaceAction } from './actions'
 
@@ -55,7 +55,7 @@ function sendReply(state: WorkspaceState, action: Extract<WorkspaceAction, { typ
   if (recipientIds.length === 0 || reply === '') return state
 
   const note = action.note.trim()
-  const hasDriver = getRoute(state.data, incident.routeId)?.driver !== undefined
+  const isDriverStall = incident.type === 'driver_stalled' || incident.type === 'driver_unresponsive'
   const entries: ActivityInput[] = []
   if (note) entries.push({ kind: 'note', at: action.at, author: CURRENT_AGENT, text: note })
   entries.push({ kind: 'reply', at: action.at, author: CURRENT_AGENT, text: reply, recipientIds })
@@ -63,7 +63,7 @@ function sendReply(state: WorkspaceState, action: Extract<WorkspaceAction, { typ
   const next = updateIncident(state, incident.id, (current) => ({
     ...current,
     status: 'monitoring',
-    nextStep: getFollowUpStep(action.at, recipientIds.length, hasDriver),
+    nextStep: getFollowUpStep(action.at, recipientIds.length, isDriverStall),
     activity: withActivity(current, entries),
   }))
   return {
@@ -98,6 +98,18 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
         ]),
       }))
     }
+
+    case 'logNextStep':
+      return updateIncident(state, action.incidentId, (incident) => {
+        if (incident.nextStep.action !== 'log_step') return incident
+        return {
+          ...incident,
+          nextStep: getStepDoneStep(incident.nextStep.label),
+          activity: withActivity(incident, [
+            { kind: 'step', at: action.at, author: CURRENT_AGENT, text: getStepLogText(incident.nextStep.label) },
+          ]),
+        }
+      })
 
     case 'addNote': {
       const text = action.text.trim()

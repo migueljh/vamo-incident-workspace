@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { HERO_INCIDENT_ID, ROUTE_14_REPLY } from '@/data/seed'
+import { HERO_INCIDENT_ID, ROUTE_14_REPLY, SEED } from '@/data/seed'
 import { getIncident, getIncidentContacts } from '@/domain/lookup'
 import { countUnanswered, sortIncidents } from '@/domain/priority'
 import { getTimeline } from '@/domain/timeline'
@@ -149,5 +149,36 @@ describe('sendReply edge cases', () => {
     )
     expect(noRecipients).toBe(initial)
     expect(noReply).toBe(initial)
+  })
+})
+
+describe('secondary incidents are actionable', () => {
+  const ROUTE_22 = 'incident-route-22'
+
+  it('logs the next step as simulated and drops the button', () => {
+    const state = run(actions.logNextStep(ROUTE_22))
+    const incident = getIncident(state.data, ROUTE_22)
+    const events = incident ? getTimeline(incident, state.data) : []
+    expect(events.at(-1)?.title).toBe('Call the customer at Stop 5 for the door code (simulated)')
+    expect(incident?.nextStep.action).toBeUndefined()
+  })
+
+  it('ignores logNextStep when the next step has no simulated action', () => {
+    const initial = createInitialState()
+    expect(workspaceReducer(initial, actions.logNextStep(HERO_INCIDENT_ID))).toEqual(initial)
+  })
+
+  it('sends a reply and moves to Monitoring with a generic follow-up', () => {
+    const reply = getIncident(SEED, ROUTE_22)?.replyTemplate ?? ''
+    const state = run(actions.sendReply(ROUTE_22, { contactIds: ['contact-luis'], reply, note: '' }))
+    const incident = getIncident(state.data, ROUTE_22)
+    expect(incident?.status).toBe('monitoring')
+    expect(incident?.nextStep.label).toBe('Follow up with contacts by 12:15 PM ET.')
+    expect(incident && countUnanswered(getIncidentContacts(state.data, incident))).toBe(0)
+  })
+
+  it('has a default reply for every incident except the unknown number', () => {
+    const withoutReply = SEED.incidents.filter((incident) => !incident.replyTemplate).map((incident) => incident.id)
+    expect(withoutReply).toEqual(['incident-unknown'])
   })
 })

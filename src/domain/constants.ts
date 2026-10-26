@@ -83,6 +83,7 @@ const CHANNEL_LABELS: Record<TimelineChannel, string> = {
   flag: 'Flag',
   app_ping: 'App ping',
   note: 'Note',
+  action: 'Action',
 }
 
 const FLAG_LABELS: Record<BoardFlagType, string> = {
@@ -95,6 +96,7 @@ const FLAG_LABELS: Record<BoardFlagType, string> = {
 const NEXT_STEP_ACTION_LABELS: Record<NextStepAction, string> = {
   call_driver: 'Call driver',
   log_outcome: 'Log outcome',
+  log_step: 'Mark step done',
 }
 
 export function getSeverityLabel(severity: Severity): string {

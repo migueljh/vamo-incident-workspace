@@ -25,6 +25,8 @@ function activityToEvent(activity: AgentActivity, contacts: Contact[]): Timeline
   switch (activity.kind) {
     case 'call':
       return { ...base, channel: 'call', title: 'Call to driver (simulated)', subtitle: activity.driverName }
+    case 'step':
+      return { ...base, channel: 'action', title: activity.text, subtitle: `by ${activity.author}` }
     case 'note':
       return { ...base, channel: 'note', title: 'Internal note', subtitle: `by ${activity.author}`, body: activity.text }
     case 'reply': {

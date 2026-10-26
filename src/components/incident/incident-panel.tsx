@@ -52,6 +52,9 @@ function IncidentView({ incident }: IncidentViewProps) {
     if (incident.nextStep.action === 'call_driver') {
       dispatch(actions.logCall(incident.id))
     }
+    if (incident.nextStep.action === 'log_step') {
+      dispatch(actions.logNextStep(incident.id))
+    }
     if (incident.nextStep.action === 'log_outcome' && route?.driver) {
       const lastCall = incident.activity.findLast((activity) => activity.kind === 'call')
       composerRef.current?.focusNote(getCallNotePrefix(route.driver.name, lastCall?.at ?? NOW))
@@ -89,7 +92,7 @@ function IncidentView({ incident }: IncidentViewProps) {
             {/* Below 1280px the route context moves under the timeline. */}
             {showRoute && <RouteContext route={route} className="mx-5 mb-4.5 border-t border-line-soft pt-3.5 xl:hidden" />}
           </ScrollArea>
-          {incident.replyTemplate !== undefined && (
+          {canAct && incident.replyTemplate !== undefined && (
             <Composer
               ref={composerRef}
               incident={incident}

@@ -11,7 +11,7 @@ export type TimelineSource = SourceRole | 'board' | 'system' | 'agent'
 
 export type ContactChannel = 'sms' | 'call'
 
-export type TimelineChannel = ContactChannel | 'flag' | 'app_ping' | 'note'
+export type TimelineChannel = ContactChannel | 'flag' | 'app_ping' | 'note' | 'action'
 
 export type StopStatus = 'pending' | 'arrived' | 'delivered'
 
@@ -34,7 +34,8 @@ export type IncidentType =
 /** What a deadline means, so the UI can say it in plain words. */
 export type DeadlineKind = 'window_closes' | 'driver_arrives' | 'route_starts'
 
-export type NextStepAction = 'call_driver' | 'log_outcome'
+/** call_driver and log_outcome drive the hero flow; log_step simulates any other next step. */
+export type NextStepAction = 'call_driver' | 'log_outcome' | 'log_step'
 
 export interface Driver {
   name: string
@@ -117,6 +118,8 @@ export type UrgencySignal =
 export type AgentActivity =
   | { id: string; kind: 'call'; at: string; author: string; driverName: string }
   | { id: string; kind: 'note'; at: string; author: string; text: string }
+  /** A simulated step or status change, e.g. "Send POD photos (simulated)". */
+  | { id: string; kind: 'step'; at: string; author: string; text: string }
   | {
       id: string
       kind: 'reply'
@@ -142,7 +145,7 @@ export interface Incident {
   deadline?: IncidentDeadline
   urgency: UrgencySignal[]
   groupingReason: string
-  /** Prefilled reply. Only incidents with a template have the composer. */
+  /** Default reply for the composer. The unknown number has none: it isn't actionable. */
   replyTemplate?: string
   activity: AgentActivity[]
 }

@@ -115,6 +115,17 @@ Prefilled reply:
 - **Send confirmation:** "Sent to 4 contacts (simulated)".
 - State lives in memory (reducer). Reset on reload is acceptable.
 
+## Beyond the golden path
+
+1. **Every incident is actionable.** Any incident can be assigned, get an internal note and a reply to its unanswered contacts, and move to Monitoring. Its primary Next step button logs "<next step label> (simulated)" in the timeline. The unknown-number incident stays non-interactive.
+2. **Composer on every actionable incident.** Each incident has a short default reply in the seed, written for its situation (e.g. door code request for Route 22, POD photos for GreenBasket). Recipients default to its unanswered contacts.
+3. **Composer validation.** Send is disabled when there are no recipients or the reply is empty, with a short reason next to the button ("Add at least one recipient" / "Write a reply"). The internal note is optional.
+4. **"+6 more stops" expands** to show the remaining pending stops, and collapses back ("Show less").
+5. **Missing or stale data.** A stop without ETA shows "ETA unavailable". A driver without location or ping shows "No data". Nothing crashes on missing optional fields.
+6. **Close the loop.** In Monitoring, the Next step card offers "Mark resolved". Resolved incidents move to the bottom of the queue, look quieter, and their actions are disabled.
+7. **Error boundary.** One React error boundary around the app shows a calm "Something went wrong. Reload to restart the demo." panel instead of a blank screen.
+8. **Empty queue.** If there are no open incidents, the queue shows "No open incidents. Nice work." and the panel shows the no-selection hint.
+
 ## Acceptance criteria
 
 - [ ] The queue lists incidents, not messages. Route 14 shows 4 contacts and ranks first.

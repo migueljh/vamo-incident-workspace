@@ -14,10 +14,10 @@ export function getCallingDriverStep(driverName: string): NextStep {
 }
 
 /** After replying: keep an eye on the incident until the follow-up time. */
-export function getFollowUpStep(sentAt: string, recipientCount: number, hasDriver: boolean): NextStep {
+export function getFollowUpStep(sentAt: string, recipientCount: number, isDriverStall: boolean): NextStep {
   const by = formatEt(addMinutes(sentAt, FOLLOW_UP_MINUTES))
   return {
-    label: hasDriver ? `Confirm driver is moving again by ${by}.` : `Follow up with contacts by ${by}.`,
+    label: isDriverStall ? `Confirm driver is moving again by ${by}.` : `Follow up with contacts by ${by}.`,
     reason: `Reply sent to ${pluralize(recipientCount, 'contact')} (simulated). Status is Monitoring.`,
   }
 }
@@ -25,4 +25,14 @@ export function getFollowUpStep(sentAt: string, recipientCount: number, hasDrive
 /** Prefill for the internal note when logging a call outcome. */
 export function getCallNotePrefix(driverName: string, calledAt: string): string {
   return `Called ${driverName} at ${formatEt(calledAt)}. Outcome: `
+}
+
+/** Timeline text for a simulated next step: "Send POD photos (simulated)". */
+export function getStepLogText(label: string): string {
+  return `${label.replace(/\.$/, '')} (simulated)`
+}
+
+/** After a simulated next step: the step stays visible, without the button. */
+export function getStepDoneStep(label: string): NextStep {
+  return { label, reason: 'Done (simulated). Reply to contacts to move to Monitoring.' }
 }
