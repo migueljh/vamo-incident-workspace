@@ -145,4 +145,9 @@
   body {
     @apply bg-background text-sm text-foreground antialiased;
   }
+  /* Tailwind v4 resets buttons to the default cursor; clickable things should look clickable. */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
 }

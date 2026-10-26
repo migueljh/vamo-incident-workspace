@@ -79,7 +79,7 @@ export function RouteContext({ route, className }: RouteContextProps) {
                 size="xs"
                 aria-expanded={showAllStops}
                 onClick={() => setShowAllStops((shown) => !shown)}
-                className="text-foreground underline underline-offset-2"
+                className="text-foreground underline underline-offset-2 hover:bg-muted hover:text-foreground hover:decoration-2"
               >
                 {showAllStops ? 'Show less' : `+${hiddenStops} more stops`}
               </Button>
