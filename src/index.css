@@ -3,6 +3,9 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
+/* docs/ holds design references, not app code: keep it out of class scanning. */
+@source not "../docs";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
