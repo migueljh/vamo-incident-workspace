@@ -1,4 +1,5 @@
 // Severity, deadlines and queue order. Rules follow docs/BRIEF.md exactly.
+import { pluralize } from '@/lib/pluralize'
 import { CRITICAL_PENDING_STOPS, SEVERITY_ORDER, STATUS_ORDER } from './constants'
 import { getIncidentContacts, getRoute } from './lookup'
 import { getEarliestPendingWindowEnd, getPendingStopCount } from './route'
@@ -71,7 +72,7 @@ export function countUnanswered(contacts: Contact[]): number {
 /** "4 contacts waiting", "1 contact waiting" or "No contacts waiting". */
 export function formatContactsWaiting(count: number): string {
   if (count === 0) return 'No contacts waiting'
-  return `${count} ${count === 1 ? 'contact' : 'contacts'} waiting`
+  return `${pluralize(count, 'contact')} waiting`
 }
 
 function formatDeadline(deadline: Deadline, now: string): string {
@@ -96,8 +97,7 @@ export function getUrgencyReason(
 
   for (const signal of incident.urgency) {
     if (signal.kind === 'stops_at_risk' && route) {
-      const count = getPendingStopCount(route)
-      parts.push({ kind: 'stops_at_risk', text: `${count} ${count === 1 ? 'stop' : 'stops'} at risk` })
+      parts.push({ kind: 'stops_at_risk', text: `${pluralize(getPendingStopCount(route), 'stop')} at risk` })
     }
     if (signal.kind === 'deadline') {
       const deadline = getDeadline(incident, route)
