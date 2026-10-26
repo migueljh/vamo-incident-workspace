@@ -8,6 +8,7 @@ import { getIncidentContacts, getRoute } from '@/domain/lookup'
 import {
   countUnanswered,
   formatContactsWaiting,
+  formatResolvedBy,
   getGroupingReason,
   getSeverity,
   getUrgencyReason,
@@ -30,11 +31,12 @@ export function IncidentHeader({ incident, data, onCollapse }: IncidentHeaderPro
   const contactsWaiting = formatContactsWaiting(countUnanswered(getIncidentContacts(data, incident)))
   const isLoud = severity === 'critical' && incident.status === 'open'
   const groupingReason = getGroupingReason(incident)
+  const isResolved = incident.status === 'resolved'
 
   return (
     <header className="flex flex-col gap-1.5 border-b border-line-soft px-5 pt-3.5 pb-3">
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <SeverityBadge severity={severity} />
+        {!isResolved && <SeverityBadge severity={severity} />}
         <h2 className="text-lg font-semibold tracking-tight">
           {incident.subject} · {incident.title}
         </h2>
@@ -50,23 +52,27 @@ export function IncidentHeader({ incident, data, onCollapse }: IncidentHeaderPro
           </Button>
         </div>
       </div>
-      <p className="flex flex-wrap items-baseline gap-x-2 text-base font-medium">
-        {reasonParts.map((part, index) => (
-          <Fragment key={part.kind}>
-            <span className={cn(part.kind === 'deadline' && isLoud && 'text-critical-strong')}>
-              {index === 0 ? capitalize(part.text) : part.text}
-            </span>
-            {part.kind === 'deadline' && part.at && (
-              <span className="font-mono text-xs text-muted-foreground">{formatEt(part.at)}</span>
-            )}
-            <span aria-hidden className="text-faint-foreground">
-              ·
-            </span>
-          </Fragment>
-        ))}
-        <span>{contactsWaiting}</span>
-      </p>
-      {groupingReason && <p className="text-xs text-soft-foreground">{groupingReason}</p>}
+      {isResolved ? (
+        <p className="text-base font-medium text-soft-foreground">{formatResolvedBy(incident.owner)}</p>
+      ) : (
+        <p className="flex flex-wrap items-baseline gap-x-2 text-base font-medium">
+          {reasonParts.map((part, index) => (
+            <Fragment key={part.kind}>
+              <span className={cn(part.kind === 'deadline' && isLoud && 'text-critical-strong')}>
+                {index === 0 ? capitalize(part.text) : part.text}
+              </span>
+              {part.kind === 'deadline' && part.at && (
+                <span className="font-mono text-xs text-muted-foreground">{formatEt(part.at)}</span>
+              )}
+              <span aria-hidden className="text-faint-foreground">
+                ·
+              </span>
+            </Fragment>
+          ))}
+          <span>{contactsWaiting}</span>
+        </p>
+      )}
+      {!isResolved && groupingReason && <p className="text-xs text-soft-foreground">{groupingReason}</p>}
     </header>
   )
 }

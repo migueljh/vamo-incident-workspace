@@ -87,12 +87,13 @@ function formatDeadline(deadline: Deadline, now: string): string {
   }
 }
 
-/** Plain-language parts of "why this is urgent", in the order the seed lists them. */
+/** Plain-language parts of "why this is urgent", in the order the seed lists them. Resolved: none. */
 export function getUrgencyReason(
   incident: Incident,
   data: WorkspaceData,
   now: string = NOW,
 ): ReasonPart[] {
+  if (incident.status === 'resolved') return []
   const route = getRoute(data, incident.routeId)
   const parts: ReasonPart[] = []
 
@@ -160,4 +161,9 @@ export function sortIncidents(data: WorkspaceData, now: string = NOW): Incident[
 export function getGroupingReason(incident: Incident): string | undefined {
   const signals = incident.contactIds.length + incident.flagIds.length
   return signals >= 2 ? incident.groupingReason : undefined
+}
+
+/** Shown instead of urgency once an incident is resolved: "Resolved by Ana". */
+export function formatResolvedBy(owner: string | undefined): string {
+  return owner ? `Resolved by ${owner}` : 'Resolved'
 }

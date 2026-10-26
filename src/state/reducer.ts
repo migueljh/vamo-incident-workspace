@@ -92,6 +92,8 @@ function resolveIncident(
     return {
       ...incident,
       status: 'resolved',
+      // Whoever closes an unowned incident owns the outcome.
+      owner: incident.owner ?? CURRENT_AGENT,
       nextStep: getResolvedStep(),
       activity: withActivity(incident, [{ kind: 'step', at: action.at, author: CURRENT_AGENT, text: 'Marked resolved' }]),
     }

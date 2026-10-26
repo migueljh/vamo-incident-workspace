@@ -5,6 +5,7 @@ import { getIncidentContacts } from '@/domain/lookup'
 import {
   countUnanswered,
   formatContactsWaiting,
+  formatResolvedBy,
   formatReason,
   getSeverity,
   getUrgencyReason,
@@ -39,7 +40,7 @@ export function IncidentCard({ incident, data, selected, onSelect }: IncidentCar
         {isOpen ? (
           <SeverityBadge severity={getSeverity(incident, data)} />
         ) : (
-          <StatusBadge key={incident.status} status={incident.status} className="animate-fade" />
+            <StatusBadge key={incident.status} status={incident.status} className="animate-fade" />
         )}
         <span className={cn('min-w-0 flex-1 truncate', isOpen ? 'font-semibold' : 'font-medium text-soft-foreground')}>
           {incident.subject}
@@ -49,15 +50,19 @@ export function IncidentCard({ incident, data, selected, onSelect }: IncidentCar
         </span>
       </div>
       <span className={cn('font-medium', !isOpen && 'text-soft-foreground')}>{incident.title}</span>
-      <span className="flex flex-wrap gap-x-1.5 text-xs text-soft-foreground">
-        {reason && (
-          <>
-            <span className={cn(isOpen && 'text-foreground')}>{reason}</span>
-            <span aria-hidden>·</span>
-          </>
-        )}
-        <span>{contactsWaiting}</span>
-      </span>
+      {incident.status === 'resolved' ? (
+        <span className="text-xs text-soft-foreground">{formatResolvedBy(incident.owner)}</span>
+      ) : (
+        <span className="flex flex-wrap gap-x-1.5 text-xs text-soft-foreground">
+          {reason && (
+            <>
+              <span className={cn(isOpen && 'text-foreground')}>{reason}</span>
+              <span aria-hidden>·</span>
+            </>
+          )}
+          <span>{contactsWaiting}</span>
+        </span>
+      )}
     </button>
   )
 }

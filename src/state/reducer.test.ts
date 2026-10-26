@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { HERO_INCIDENT_ID, ROUTE_14_REPLY, SEED } from '@/data/seed'
 import { getIncident, getIncidentContacts } from '@/domain/lookup'
-import { countUnanswered, sortIncidents } from '@/domain/priority'
+import { countUnanswered, formatResolvedBy, getUrgencyReason, sortIncidents } from '@/domain/priority'
 import { getTimeline } from '@/domain/timeline'
 import type { Incident } from '@/domain/types'
 import { actions } from './actions'
@@ -237,5 +237,38 @@ describe('resolveIncident', () => {
     }
     state = workspaceReducer(state, actions.resolveIncident(HERO_INCIDENT_ID))
     expect(state.selectedIncidentId).toBeNull()
+  })
+})
+
+describe('resolved incidents drop urgency', () => {
+  const resolve = (incidentId: string, owner?: string) => {
+    let state = createInitialState()
+    if (owner) state = workspaceReducer(state, actions.assignToMe(incidentId))
+    const incident = getIncident(state.data, incidentId)
+    state = workspaceReducer(
+      state,
+      actions.sendReply(incidentId, { contactIds: incident?.contactIds ?? [], reply: 'On it.', note: '' }),
+    )
+    return workspaceReducer(state, actions.resolveIncident(incidentId))
+  }
+
+  it('has no urgency reason once resolved, but keeps it while monitoring', () => {
+    const state = resolve(HERO_INCIDENT_ID, 'Ana')
+    expect(getUrgencyReason(hero(state), state.data)).toEqual([])
+
+    const monitoring = run(
+      actions.sendReply(HERO_INCIDENT_ID, { contactIds: ROUTE_14_CONTACTS, reply: ROUTE_14_REPLY, note: '' }),
+    )
+    expect(getUrgencyReason(hero(monitoring), monitoring.data).length).toBeGreaterThan(0)
+  })
+
+  it('says who resolved it', () => {
+    expect(formatResolvedBy(hero(resolve(HERO_INCIDENT_ID, 'Ana')).owner)).toBe('Resolved by Ana')
+    // An unowned incident is owned by whoever resolves it.
+    const greenbasket = getIncident(resolve('incident-greenbasket').data, 'incident-greenbasket')
+    expect(formatResolvedBy(greenbasket?.owner)).toBe('Resolved by Ana')
+    // A teammate's incident keeps its owner.
+    const route22 = getIncident(resolve('incident-route-22').data, 'incident-route-22')
+    expect(formatResolvedBy(route22?.owner)).toBe('Resolved by Carlos')
   })
 })
