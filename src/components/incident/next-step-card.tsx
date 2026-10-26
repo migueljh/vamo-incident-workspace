@@ -53,7 +53,7 @@ export function NextStepCard({ incident, canAct, onAssign, onAction, onResolve }
             )}
             {status === 'monitoring' && (
               <Button size="md" onClick={onResolve} disabled={!onResolve} className="font-semibold">
-                Mark resolved
+                Resolve incident
               </Button>
             )}
           </div>

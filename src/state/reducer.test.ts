@@ -162,7 +162,8 @@ describe('secondary incidents are actionable', () => {
     const state = run(actions.logNextStep(ROUTE_22))
     const incident = getIncident(state.data, ROUTE_22)
     const events = incident ? getTimeline(incident, state.data) : []
-    expect(events.at(-1)?.title).toBe('Call the customer at Stop 5 for the door code (simulated)')
+    expect(events.at(-1)?.title).toBe('Step done (simulated)')
+    expect(events.at(-1)?.body).toBe('Call the customer at Stop 5 for the door code.')
     expect(incident?.nextStep.action).toBeUndefined()
   })
 
@@ -208,7 +209,7 @@ describe('resolveIncident', () => {
     const resolved = workspaceReducer(sent, actions.resolveIncident(HERO_INCIDENT_ID))
     expect(hero(resolved).status).toBe('resolved')
     expect(hero(resolved).nextStep.label).toBe('Resolved.')
-    expect(timelineTitles(resolved).at(-1)).toBe('Marked resolved')
+    expect(timelineTitles(resolved).at(-1)).toBe('Resolved by Ana')
     expect(sortIncidents(resolved.data).at(-1)?.id).toBe(HERO_INCIDENT_ID)
     expect(resolved.selectedIncidentId).toBe(HERO_INCIDENT_ID)
   })
@@ -263,9 +264,9 @@ describe('resolved incidents drop urgency', () => {
   it('says who resolved it, independent of the owner', () => {
     expect(formatResolvedBy(hero(resolve(HERO_INCIDENT_ID, 'Ana')).resolvedBy)).toBe('Resolved by Ana')
 
-    // Unowned stays unowned.
+    // An unowned incident becomes Ana's once she acts on it.
     const greenbasket = getIncident(resolve('incident-greenbasket').data, 'incident-greenbasket')
-    expect(greenbasket?.owner).toBeUndefined()
+    expect(greenbasket?.owner).toBe('Ana')
     expect(formatResolvedBy(greenbasket?.resolvedBy)).toBe('Resolved by Ana')
 
     // A teammate's incident keeps its owner, but Ana resolved it.
@@ -280,6 +281,43 @@ describe('resolved incidents drop urgency', () => {
     )
     const resolved = workspaceReducer(sent, actions.resolveIncident(HERO_INCIDENT_ID, undefined, 'Carlos'))
     expect(hero(resolved).resolvedBy).toBe('Carlos')
-    expect(hero(resolved).owner).toBeUndefined()
+    expect(hero(resolved).owner).toBe('Ana')
+  })
+})
+
+describe('acting on an unassigned incident assigns it to Ana', () => {
+  const GREENBASKET = 'incident-greenbasket'
+  const owner = (state: WorkspaceState, id: string) => getIncident(state.data, id)?.owner
+
+  it.each([
+    ['step done', actions.logNextStep(GREENBASKET)],
+    ['add note', actions.addNote(GREENBASKET, 'Photos found')],
+    ['send reply', actions.sendReply(GREENBASKET, { contactIds: ['contact-greenbasket'], reply: 'Sent.', note: '' })],
+  ])('%s', (_, action) => {
+    expect(owner(createInitialState(), GREENBASKET)).toBeUndefined()
+    expect(owner(run(action), GREENBASKET)).toBe('Ana')
+  })
+
+  it('resolve', () => {
+    const monitoring = {
+      ...createInitialState(),
+      data: {
+        ...SEED,
+        incidents: SEED.incidents.map((incident) =>
+          incident.id === GREENBASKET ? { ...incident, status: 'monitoring' as const } : incident,
+        ),
+      },
+    }
+    expect(owner(workspaceReducer(monitoring, actions.resolveIncident(GREENBASKET)), GREENBASKET)).toBe('Ana')
+  })
+
+  it('keeps a teammate as owner', () => {
+    const state = run(
+      actions.logNextStep('incident-route-22'),
+      actions.addNote('incident-route-22', 'Door code sent'),
+      actions.sendReply('incident-route-22', { contactIds: ['contact-luis'], reply: 'Code is 4512.', note: '' }),
+      actions.resolveIncident('incident-route-22'),
+    )
+    expect(owner(state, 'incident-route-22')).toBe('Carlos')
   })
 })

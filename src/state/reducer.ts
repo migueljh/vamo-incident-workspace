@@ -7,8 +7,9 @@ import {
   getFollowUpStep,
   getResolvedStep,
   getStepDoneStep,
-  getStepLogText,
+  STEP_DONE_TEXT,
 } from '@/domain/next-step'
+import { formatResolvedBy } from '@/domain/priority'
 import type { AgentActivity, Incident, WorkspaceData } from '@/domain/types'
 import type { WorkspaceAction } from './actions'
 
@@ -68,6 +69,7 @@ function sendReply(state: WorkspaceState, action: Extract<WorkspaceAction, { typ
 
   const next = updateIncident(state, incident.id, (current) => ({
     ...current,
+    owner: current.owner ?? CURRENT_AGENT,
     status: 'monitoring',
     nextStep: current.followUpStep ?? getFollowUpStep(action.at, recipientIds.length, isDriverStall),
     activity: withActivity(current, entries),
@@ -92,9 +94,12 @@ function resolveIncident(
     return {
       ...incident,
       status: 'resolved',
+      owner: incident.owner ?? CURRENT_AGENT,
       resolvedBy: action.resolvedBy,
       nextStep: getResolvedStep(),
-      activity: withActivity(incident, [{ kind: 'step', at: action.at, author: action.resolvedBy, text: 'Marked resolved' }]),
+      activity: withActivity(incident, [
+        { kind: 'step', at: action.at, author: action.resolvedBy, text: formatResolvedBy(action.resolvedBy) },
+      ]),
     }
   })
   // With nothing left open, the panel falls back to the no-selection hint.
@@ -137,9 +142,10 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
         if (incident.nextStep.action !== 'log_step') return incident
         return {
           ...incident,
+          owner: incident.owner ?? CURRENT_AGENT,
           nextStep: getStepDoneStep(incident.nextStep.label),
           activity: withActivity(incident, [
-            { kind: 'step', at: action.at, author: CURRENT_AGENT, text: getStepLogText(incident.nextStep.label) },
+            { kind: 'step', at: action.at, author: CURRENT_AGENT, text: STEP_DONE_TEXT, detail: incident.nextStep.label },
           ]),
         }
       })
@@ -149,6 +155,7 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
       if (!text) return state
       return updateIncident(state, action.incidentId, (incident) => ({
         ...incident,
+        owner: incident.owner ?? CURRENT_AGENT,
         activity: withActivity(incident, [{ kind: 'note', at: action.at, author: CURRENT_AGENT, text }]),
       }))
     }

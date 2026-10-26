@@ -119,8 +119,8 @@ export type UrgencySignal =
 export type AgentActivity =
   | { id: string; kind: 'call'; at: string; author: string; driverName: string }
   | { id: string; kind: 'note'; at: string; author: string; text: string }
-  /** A simulated step or status change, e.g. "Send POD photos (simulated)". */
-  | { id: string; kind: 'step'; at: string; author: string; text: string }
+  /** A simulated step or status change, e.g. "Step done (simulated)" with the step as detail. */
+  | { id: string; kind: 'step'; at: string; author: string; text: string; detail?: string }
   | {
       id: string
       kind: 'reply'

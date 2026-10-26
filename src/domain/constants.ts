@@ -96,7 +96,7 @@ const FLAG_LABELS: Record<BoardFlagType, string> = {
 const NEXT_STEP_ACTION_LABELS: Record<NextStepAction, string> = {
   call_driver: 'Call driver',
   log_outcome: 'Log outcome',
-  log_step: 'Mark step done',
+  log_step: 'Done',
 }
 
 export function getSeverityLabel(severity: Severity): string {

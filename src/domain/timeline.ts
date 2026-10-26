@@ -26,7 +26,7 @@ function activityToEvent(activity: AgentActivity, contacts: Contact[]): Timeline
     case 'call':
       return { ...base, channel: 'call', title: 'Call to driver (simulated)', subtitle: activity.driverName }
     case 'step':
-      return { ...base, channel: 'action', title: activity.text, subtitle: `by ${activity.author}` }
+      return { ...base, channel: 'action', title: activity.text, subtitle: `by ${activity.author}`, body: activity.detail }
     case 'note':
       return { ...base, channel: 'note', title: 'Internal note', subtitle: `by ${activity.author}`, body: activity.text }
     case 'reply': {

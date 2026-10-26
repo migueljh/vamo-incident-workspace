@@ -27,17 +27,15 @@ export function getCallNotePrefix(driverName: string, calledAt: string): string 
   return `Called ${driverName} at ${formatEt(calledAt)}. Outcome: `
 }
 
-/** Timeline text for a simulated next step: "Send POD photos (simulated)". */
-export function getStepLogText(label: string): string {
-  return `${label.replace(/\.$/, '')} (simulated)`
-}
+/** Timeline text for a simulated next step; the step itself goes in the event body. */
+export const STEP_DONE_TEXT = 'Step done (simulated)'
 
 /** After a simulated next step: the step stays visible, without the button. */
 export function getStepDoneStep(label: string): NextStep {
   return { label, reason: 'Done (simulated). Reply to let the contact know.' }
 }
 
-/** After "Mark resolved": nothing left to do. */
+/** After "Resolve incident": nothing left to do. */
 export function getResolvedStep(): NextStep {
   return { label: 'Resolved.', reason: 'No further action needed.' }
 }

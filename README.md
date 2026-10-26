@@ -21,7 +21,7 @@ npm run build   # type-check + production build
 - Click **Assign to me**. The owner becomes "Ana (you)" in the header and the queue.
 - Click **Call driver**, then **Log outcome**. The internal note opens prefilled; add what happened (e.g. "Flat tire, back on the road in 15 min").
 - Edit the reply if you like and click **Send to 4 contacts (simulated)**. Contacts are answered, the incident moves to Monitoring and drops below open incidents.
-- Click **Mark resolved**. The incident moves to the bottom of the queue and becomes read-only.
+- Click **Resolve incident**. The incident moves to the bottom of the queue and becomes read-only.
 
 ## Notes for reviewers
 
