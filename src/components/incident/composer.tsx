@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { getSourceLabel } from '@/domain/constants'
 import { getIncidentContacts, getRoute } from '@/domain/lookup'
+import { getSendBlocker } from '@/domain/reply'
 import { getStopLabel } from '@/domain/route'
 import type { Incident, WorkspaceData } from '@/domain/types'
 import { pluralize } from '@/lib/pluralize'
@@ -77,7 +78,8 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
   const route = getRoute(data, incident.routeId)
   const recipients = getIncidentContacts(data, incident).filter((contact) => !contact.answered)
   const selectedIds = recipients.filter((contact) => !excludedIds.includes(contact.id)).map((contact) => contact.id)
-  const canSend = Boolean(onSend) && selectedIds.length > 0 && reply.trim() !== ''
+  const sendBlocker = getSendBlocker(recipients.length, selectedIds.length, reply)
+  const canSend = Boolean(onSend) && sendBlocker === null
   const sendLabel =
     recipients.length > 0 ? `Send to ${pluralize(selectedIds.length, 'contact')} (simulated)` : 'Send (simulated)'
 
@@ -137,7 +139,10 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
         ) : (
           <p className="text-xs text-soft-foreground">Note is internal. Reply goes out by SMS.</p>
         )}
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          {sendBlocker && recipients.length > 0 && (
+            <span className="text-xs text-soft-foreground">{sendBlocker}</span>
+          )}
           <Button variant="outline" size="md" onClick={handleAddNote} disabled={!onAddNote || !note.trim()}>
             Add note
           </Button>
