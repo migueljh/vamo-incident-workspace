@@ -49,8 +49,14 @@ src/
   domain/constants.ts     # severity, roles, channels, statuses: labels + styles (single source)
   domain/priority.ts      # severity + sorting rules (pure, tested)
   domain/time.ts          # NOW constant, ET formatting, relative time (pure, tested)
+  domain/route.ts         # pending stops, progress, lateness (pure)
+  domain/timeline.ts      # one chronological feed per incident (pure)
+  domain/next-step.ts     # next-step wording for the golden path (pure)
+  domain/lookup.ts        # incident → route, contacts, flags
   state/                  # incident reducer + context
+  index.css               # design tokens (colors, fonts, type scale, radii): the only place for hex values
   components/ui/          # shadcn primitives
+  components/ds/          # design system: SeverityBadge, Tag, StatusBadge, SectionLabel, TimeStamp, Panel, RecipientChip, ProgressBar (no business logic)
   components/queue/       # incident queue
   components/incident/    # incident panel: header, next step, timeline, route context, composer
 docs/                     # brief, design principles, coding standards

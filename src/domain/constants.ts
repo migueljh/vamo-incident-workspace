@@ -31,7 +31,7 @@ const SEVERITY_CLASSES: Record<Severity, string> = {
   critical: 'border-critical bg-critical text-critical-foreground',
   high: 'border-high-line bg-high-soft text-high-strong',
   low: 'border-input bg-card text-soft-foreground',
-  needs_linking: 'border-dashed border-placeholder bg-card text-soft-foreground',
+  needs_linking: 'border-dashed border-line-dashed bg-card text-soft-foreground',
 }
 
 const STATUS_LABELS: Record<IncidentStatus, string> = {
@@ -41,7 +41,7 @@ const STATUS_LABELS: Record<IncidentStatus, string> = {
 }
 
 const STATUS_CLASSES: Record<IncidentStatus, string> = {
-  open: 'border-strong bg-card text-foreground',
+  open: 'border-line-strong bg-card text-foreground',
   monitoring: 'border-tag bg-tag text-tag-foreground',
   resolved: 'border-dashed border-input bg-card text-muted-foreground',
 }
