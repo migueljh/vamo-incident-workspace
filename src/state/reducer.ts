@@ -7,9 +7,9 @@ import {
   getFollowUpStep,
   getResolvedStep,
   getStepDoneStep,
+  RESOLVED_TEXT,
   STEP_DONE_TEXT,
 } from '@/domain/next-step'
-import { formatResolvedBy } from '@/domain/priority'
 import type { AgentActivity, Incident, WorkspaceData } from '@/domain/types'
 import type { WorkspaceAction } from './actions'
 
@@ -98,7 +98,7 @@ function resolveIncident(
       resolvedBy: action.resolvedBy,
       nextStep: getResolvedStep(),
       activity: withActivity(incident, [
-        { kind: 'step', at: action.at, author: action.resolvedBy, text: formatResolvedBy(action.resolvedBy) },
+        { kind: 'step', at: action.at, author: action.resolvedBy, text: RESOLVED_TEXT },
       ]),
     }
   })

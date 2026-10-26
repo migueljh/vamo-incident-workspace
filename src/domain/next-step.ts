@@ -30,6 +30,9 @@ export function getCallNotePrefix(driverName: string, calledAt: string): string 
 /** Timeline text for a simulated next step; the step itself goes in the event body. */
 export const STEP_DONE_TEXT = 'Step done (simulated)'
 
+/** Timeline text for resolving; the event's "by <name>" names who did it. */
+export const RESOLVED_TEXT = 'Resolved'
+
 /** After a simulated next step: the step stays visible, without the button. */
 export function getStepDoneStep(label: string): NextStep {
   return { label, reason: 'Done (simulated). Reply to let the contact know.' }
