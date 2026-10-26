@@ -1,4 +1,5 @@
 import { AppHeader } from '@/components/app-header'
+import { IncidentPanel } from '@/components/incident/incident-panel'
 import { Queue } from '@/components/queue/queue'
 import { WorkspaceProvider } from '@/state/workspace-provider'
 
@@ -9,7 +10,7 @@ function App() {
         <AppHeader />
         <div className="flex min-h-0 flex-1">
           <Queue />
-          <main className="min-w-0 flex-1 bg-card" />
+          <IncidentPanel />
         </div>
       </div>
     </WorkspaceProvider>

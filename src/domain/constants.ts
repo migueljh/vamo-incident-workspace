@@ -2,6 +2,7 @@
 import type {
   BoardFlagType,
   IncidentStatus,
+  NextStepAction,
   Severity,
   TimelineChannel,
   TimelineSource,
@@ -91,6 +92,11 @@ const FLAG_LABELS: Record<BoardFlagType, string> = {
   delivered_far_from_address: 'Delivered far from address',
 }
 
+const NEXT_STEP_ACTION_LABELS: Record<NextStepAction, string> = {
+  call_driver: 'Call driver',
+  log_outcome: 'Log outcome',
+}
+
 export function getSeverityLabel(severity: Severity): string {
   return SEVERITY_LABELS[severity]
 }
@@ -125,6 +131,10 @@ export function getChannelLabel(channel: TimelineChannel): string {
 
 export function getFlagLabel(type: BoardFlagType): string {
   return FLAG_LABELS[type]
+}
+
+export function getNextStepActionLabel(action: NextStepAction): string {
+  return NEXT_STEP_ACTION_LABELS[action]
 }
 
 /** "Ana (you)", "Carlos" or "Unassigned". */

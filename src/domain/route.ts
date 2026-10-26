@@ -41,3 +41,9 @@ export function getEarliestPendingWindowEnd(route: Route): string | undefined {
 export function hasRouteDetail(route: Route | undefined): route is Route {
   return route !== undefined && route.stops.length > 0
 }
+
+/** "Stop 7" for a contact linked to a stop on this route. */
+export function getStopLabel(route: Route | undefined, stopId: string | undefined): string | undefined {
+  const stop = route?.stops.find((item) => item.id === stopId)
+  return stop ? `Stop ${stop.number}` : undefined
+}

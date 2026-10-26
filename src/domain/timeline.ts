@@ -2,13 +2,9 @@
 import { pluralize } from '@/lib/pluralize'
 import { getFlagLabel } from './constants'
 import { getIncidentContacts, getIncidentFlags, getRoute } from './lookup'
+import { getStopLabel } from './route'
 import { compareTimes } from './time'
 import type { AgentActivity, Contact, Incident, Route, TimelineEvent, WorkspaceData } from './types'
-
-function getStopLabel(route: Route | undefined, stopId: string | undefined): string | undefined {
-  const stop = route?.stops.find((item) => item.id === stopId)
-  return stop ? `Stop ${stop.number}` : undefined
-}
 
 function contactToEvent(contact: Contact, route: Route | undefined): TimelineEvent {
   return {
