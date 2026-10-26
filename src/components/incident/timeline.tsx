@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { TimelineEvent } from '@/domain/types'
 import { TimelineItem } from './timeline-item'
 
@@ -7,6 +7,9 @@ interface TimelineProps {
 }
 
 export function Timeline({ events }: TimelineProps) {
+  // Events present when the incident opened don't animate; ones added after do.
+  const [initialCount] = useState(events.length)
+
   const endRef = useRef<HTMLLIElement>(null)
   const countRef = useRef(events.length)
 
@@ -27,7 +30,7 @@ export function Timeline({ events }: TimelineProps) {
       <ol className="px-5 py-1.5">
         {events.map((event, index) => (
           <li key={event.id} ref={index === events.length - 1 ? endRef : undefined}>
-            <TimelineItem event={event} isLast={index === events.length - 1} />
+            <TimelineItem event={event} isLast={index === events.length - 1} isNew={index >= initialCount} />
           </li>
         ))}
       </ol>

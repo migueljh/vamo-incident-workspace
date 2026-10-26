@@ -8,11 +8,12 @@ import { cn } from '@/lib/utils'
 interface TimelineItemProps {
   event: TimelineEvent
   isLast: boolean
+  isNew?: boolean
 }
 
-export function TimelineItem({ event, isLast }: TimelineItemProps) {
+export function TimelineItem({ event, isLast, isNew = false }: TimelineItemProps) {
   return (
-    <div className="grid grid-cols-[6rem_0.75rem_minmax(0,1fr)] gap-x-3">
+    <div className={cn('grid grid-cols-[6rem_0.75rem_minmax(0,1fr)] gap-x-3', isNew && 'animate-enter')}>
       <TimeStamp at={event.at} className="pt-px" />
       <div aria-hidden className="flex flex-col items-center pt-1.25">
         <div className={cn('size-2.25 shrink-0 rounded-full', getSourceDotClasses(event.source))} />

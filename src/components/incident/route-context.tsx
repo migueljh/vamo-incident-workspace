@@ -68,10 +68,26 @@ export function RouteContext({ route, className }: RouteContextProps) {
             <SectionLabel>Next pending stops</SectionLabel>
           </div>
           <ul>
-            {pendingStops.slice(0, showAllStops ? undefined : VISIBLE_STOPS).map((stop) => (
+            {pendingStops.slice(0, VISIBLE_STOPS).map((stop) => (
               <PendingStopRow key={stop.id} stop={stop} />
             ))}
           </ul>
+          {hiddenStops > 0 && (
+            // Grid rows 0fr → 1fr animates the height of the extra stops without measuring them.
+            <div
+              inert={!showAllStops}
+              className={cn(
+                'grid transition-[grid-template-rows,opacity] duration-(--duration-base) ease-out',
+                showAllStops ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
+              )}
+            >
+              <ul className="min-h-0 overflow-hidden">
+                {pendingStops.slice(VISIBLE_STOPS).map((stop) => (
+                  <PendingStopRow key={stop.id} stop={stop} />
+                ))}
+              </ul>
+            </div>
+          )}
           {hiddenStops > 0 && (
             <div className="px-1.5 py-1">
               <Button

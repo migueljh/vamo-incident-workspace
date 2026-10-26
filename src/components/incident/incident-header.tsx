@@ -40,7 +40,7 @@ export function IncidentHeader({ incident, data, onCollapse }: IncidentHeaderPro
         </h2>
         {business && <span className="text-soft-foreground">{business}</span>}
         <div className="ml-auto flex items-center gap-2.5">
-          <StatusBadge status={incident.status} />
+          <StatusBadge key={incident.status} status={incident.status} className="animate-fade" />
           <span className={cn('text-xs', incident.owner ? 'text-foreground' : 'text-muted-foreground')}>
             {formatOwner(incident.owner)}
           </span>

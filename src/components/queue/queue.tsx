@@ -1,6 +1,7 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { sortIncidents } from '@/domain/priority'
 import { cn } from '@/lib/utils'
+import { withViewTransition } from '@/lib/view-transition'
 import { actions } from '@/state/actions'
 import { useWorkspace } from '@/state/workspace-context'
 import { IncidentCard } from './incident-card'
@@ -16,7 +17,7 @@ export function Queue() {
     <aside
       aria-label="Incident queue"
       className={cn(
-        'flex min-w-0 flex-col border-r',
+        'flex min-w-0 flex-col border-r [view-transition-name:queue]',
         panelCollapsed ? 'flex-1' : 'w-80 shrink-0 xl:w-93',
       )}
     >
@@ -33,12 +34,18 @@ export function Queue() {
         {/* One column even when collapsed, so the queue still reads top to bottom by urgency. */}
         <ul className="grid gap-2 px-3 pb-4">
           {incidents.map((incident) => (
-            <li key={incident.id}>
+            // A name per card lets the View Transition animate reorders.
+            <li key={incident.id} style={{ viewTransitionName: `card-${incident.id}` }}>
               <IncidentCard
                 incident={incident}
                 data={data}
                 selected={!panelCollapsed && incident.id === selectedIncidentId}
-                onSelect={(incidentId) => dispatch(actions.selectIncident(incidentId))}
+                onSelect={(incidentId) => {
+                  const select = () => dispatch(actions.selectIncident(incidentId))
+                  // Selecting from a collapsed queue re-opens the panel, so animate that.
+                  if (panelCollapsed) withViewTransition(select)
+                  else select()
+                }}
               />
             </li>
           ))}

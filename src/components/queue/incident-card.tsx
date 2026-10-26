@@ -39,7 +39,7 @@ export function IncidentCard({ incident, data, selected, onSelect }: IncidentCar
         {isOpen ? (
           <SeverityBadge severity={getSeverity(incident, data)} />
         ) : (
-          <StatusBadge status={incident.status} />
+          <StatusBadge key={incident.status} status={incident.status} className="animate-fade" />
         )}
         <span className={cn('min-w-0 flex-1 truncate', isOpen ? 'font-semibold' : 'font-medium text-soft-foreground')}>
           {incident.subject}

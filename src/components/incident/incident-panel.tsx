@@ -7,6 +7,7 @@ import { hasRouteContext } from '@/domain/route'
 import { NOW } from '@/domain/time'
 import { getTimeline } from '@/domain/timeline'
 import type { Incident } from '@/domain/types'
+import { withViewTransition } from '@/lib/view-transition'
 import { actions } from '@/state/actions'
 import { useWorkspace } from '@/state/workspace-context'
 import { CollapsedRail } from './collapsed-rail'
@@ -27,13 +28,13 @@ export function IncidentPanel() {
       <CollapsedRail
         incident={incident}
         severity={incident && getSeverity(incident, state.data)}
-        onExpand={() => dispatch(actions.togglePanel())}
+        onExpand={() => withViewTransition(() => dispatch(actions.togglePanel()))}
       />
     )
   }
 
   return (
-    <main className="flex min-w-0 flex-1 flex-col bg-card">
+    <main className="flex min-w-0 flex-1 flex-col bg-card [view-transition-name:incident-panel]">
       {incident ? <IncidentView key={incident.id} incident={incident} /> : <EmptyPanel />}
     </main>
   )
@@ -77,13 +78,17 @@ function IncidentView({ incident }: IncidentViewProps) {
 
   return (
     <>
-      <IncidentHeader incident={incident} data={data} onCollapse={() => dispatch(actions.togglePanel())} />
+      <IncidentHeader
+        incident={incident}
+        data={data}
+        onCollapse={() => withViewTransition(() => dispatch(actions.togglePanel()))}
+      />
       <NextStepCard
         incident={incident}
         canAct={canAct}
         onAssign={() => dispatch(actions.assignToMe(incident.id))}
         onAction={handleNextStepAction}
-        onResolve={() => dispatch(actions.resolveIncident(incident.id))}
+        onResolve={() => withViewTransition(() => dispatch(actions.resolveIncident(incident.id)))}
       />
       <div className="flex min-h-0 flex-1">
         <div className="flex min-w-0 flex-1 flex-col">

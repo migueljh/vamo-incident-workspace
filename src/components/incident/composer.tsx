@@ -9,6 +9,7 @@ import { getSendBlocker } from '@/domain/reply'
 import { getStopLabel } from '@/domain/route'
 import type { Incident, WorkspaceData } from '@/domain/types'
 import { pluralize } from '@/lib/pluralize'
+import { withViewTransition } from '@/lib/view-transition'
 
 export interface ComposerHandle {
   /** Focus the internal note, prefilling it when empty. */
@@ -57,11 +58,14 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
   }, [focusRequest])
 
   function handleSend() {
-    onSend?.({ contactIds: selectedIds, reply, note })
-    setNote('')
-    setReply('')
-    setExcludedIds([])
-    setConfirmation(`Sent to ${pluralize(selectedIds.length, 'contact')} (simulated)`)
+    // One transition for the queue reorder and the composer collapsing to "All contacts answered."
+    withViewTransition(() => {
+      onSend?.({ contactIds: selectedIds, reply, note })
+      setNote('')
+      setReply('')
+      setExcludedIds([])
+      setConfirmation(`Sent to ${pluralize(selectedIds.length, 'contact')} (simulated)`)
+    })
   }
 
   function handleAddNote() {
@@ -89,14 +93,14 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
       ? 'Saved with the reply, or add it now.'
       : 'Add it to the timeline.'
   const confirmationText = confirmation && (
-    <p role="status" className="inline-flex items-center gap-1.5 text-xs font-medium">
+    <p role="status" className="inline-flex animate-fade items-center gap-1.5 text-xs font-medium">
       <Check aria-hidden className="size-3.5" />
       {confirmation}
     </p>
   )
 
   return (
-    <div className="flex flex-col gap-2.5 border-t bg-card px-5 pt-3 pb-3.5">
+    <div className="flex flex-col gap-2.5 border-t bg-card px-5 pt-3 pb-3.5 [view-transition-name:composer]">
       <div className="flex items-start gap-2.5">
         <label htmlFor={noteId} className="w-18.5 shrink-0 pt-1.75 text-xs font-semibold text-soft-foreground">
           Internal note
