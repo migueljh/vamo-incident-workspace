@@ -142,6 +142,8 @@ export interface Incident {
   contactIds: string[]
   status: IncidentStatus
   owner?: string
+  /** Who marked it resolved; independent of the owner. */
+  resolvedBy?: string
   nextStep: NextStep
   deadline?: IncidentDeadline
   urgency: UrgencySignal[]

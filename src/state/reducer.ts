@@ -92,10 +92,9 @@ function resolveIncident(
     return {
       ...incident,
       status: 'resolved',
-      // Whoever closes an unowned incident owns the outcome.
-      owner: incident.owner ?? CURRENT_AGENT,
+      resolvedBy: action.resolvedBy,
       nextStep: getResolvedStep(),
-      activity: withActivity(incident, [{ kind: 'step', at: action.at, author: CURRENT_AGENT, text: 'Marked resolved' }]),
+      activity: withActivity(incident, [{ kind: 'step', at: action.at, author: action.resolvedBy, text: 'Marked resolved' }]),
     }
   })
   // With nothing left open, the panel falls back to the no-selection hint.

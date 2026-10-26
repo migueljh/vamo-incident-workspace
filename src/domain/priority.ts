@@ -164,6 +164,6 @@ export function getGroupingReason(incident: Incident): string | undefined {
 }
 
 /** Shown instead of urgency once an incident is resolved: "Resolved by Ana". */
-export function formatResolvedBy(owner: string | undefined): string {
-  return owner ? `Resolved by ${owner}` : 'Resolved'
+export function formatResolvedBy(resolvedBy: string | undefined): string {
+  return resolvedBy ? `Resolved by ${resolvedBy}` : 'Resolved'
 }

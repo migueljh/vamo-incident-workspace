@@ -51,7 +51,7 @@ export function IncidentCard({ incident, data, selected, onSelect }: IncidentCar
       </div>
       <span className={cn('font-medium', !isOpen && 'text-soft-foreground')}>{incident.title}</span>
       {incident.status === 'resolved' ? (
-        <span className="text-xs text-soft-foreground">{formatResolvedBy(incident.owner)}</span>
+        <span className="text-xs text-soft-foreground">{formatResolvedBy(incident.resolvedBy)}</span>
       ) : (
         <span className="flex flex-wrap gap-x-1.5 text-xs text-soft-foreground">
           {reason && (

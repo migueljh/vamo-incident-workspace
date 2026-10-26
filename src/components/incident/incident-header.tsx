@@ -53,7 +53,7 @@ export function IncidentHeader({ incident, data, onCollapse }: IncidentHeaderPro
         </div>
       </div>
       {isResolved ? (
-        <p className="text-base font-medium text-soft-foreground">{formatResolvedBy(incident.owner)}</p>
+        <p className="text-base font-medium text-soft-foreground">{formatResolvedBy(incident.resolvedBy)}</p>
       ) : (
         <p className="flex flex-wrap items-baseline gap-x-2 text-base font-medium">
           {reasonParts.map((part, index) => (

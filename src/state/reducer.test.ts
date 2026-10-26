@@ -260,13 +260,26 @@ describe('resolved incidents drop urgency', () => {
     expect(getUrgencyReason(hero(monitoring), monitoring.data).length).toBeGreaterThan(0)
   })
 
-  it('says who resolved it', () => {
-    expect(formatResolvedBy(hero(resolve(HERO_INCIDENT_ID, 'Ana')).owner)).toBe('Resolved by Ana')
-    // An unowned incident is owned by whoever resolves it.
+  it('says who resolved it, independent of the owner', () => {
+    expect(formatResolvedBy(hero(resolve(HERO_INCIDENT_ID, 'Ana')).resolvedBy)).toBe('Resolved by Ana')
+
+    // Unowned stays unowned.
     const greenbasket = getIncident(resolve('incident-greenbasket').data, 'incident-greenbasket')
-    expect(formatResolvedBy(greenbasket?.owner)).toBe('Resolved by Ana')
-    // A teammate's incident keeps its owner.
+    expect(greenbasket?.owner).toBeUndefined()
+    expect(formatResolvedBy(greenbasket?.resolvedBy)).toBe('Resolved by Ana')
+
+    // A teammate's incident keeps its owner, but Ana resolved it.
     const route22 = getIncident(resolve('incident-route-22').data, 'incident-route-22')
-    expect(formatResolvedBy(route22?.owner)).toBe('Resolved by Carlos')
+    expect(route22?.owner).toBe('Carlos')
+    expect(formatResolvedBy(route22?.resolvedBy)).toBe('Resolved by Ana')
+  })
+
+  it('records whoever the resolve action names', () => {
+    const sent = run(
+      actions.sendReply(HERO_INCIDENT_ID, { contactIds: ROUTE_14_CONTACTS, reply: ROUTE_14_REPLY, note: '' }),
+    )
+    const resolved = workspaceReducer(sent, actions.resolveIncident(HERO_INCIDENT_ID, undefined, 'Carlos'))
+    expect(hero(resolved).resolvedBy).toBe('Carlos')
+    expect(hero(resolved).owner).toBeUndefined()
   })
 })

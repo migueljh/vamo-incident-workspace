@@ -1,4 +1,5 @@
 // Typed actions for the workspace reducer. Timestamps default to the fixed demo clock.
+import { CURRENT_AGENT } from '@/domain/constants'
 import { NOW } from '@/domain/time'
 
 export type WorkspaceAction =
@@ -15,7 +16,7 @@ export type WorkspaceAction =
       note: string
       at: string
     }
-  | { type: 'resolveIncident'; incidentId: string; at: string }
+  | { type: 'resolveIncident'; incidentId: string; at: string; resolvedBy: string }
   | { type: 'togglePanel' }
 
 interface SendReplyInput {
@@ -41,10 +42,11 @@ export const actions = {
     ...input,
     at,
   }),
-  resolveIncident: (incidentId: string, at: string = NOW): WorkspaceAction => ({
+  resolveIncident: (incidentId: string, at: string = NOW, resolvedBy: string = CURRENT_AGENT): WorkspaceAction => ({
     type: 'resolveIncident',
     incidentId,
     at,
+    resolvedBy,
   }),
   togglePanel: (): WorkspaceAction => ({ type: 'togglePanel' }),
 }
