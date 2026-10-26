@@ -15,6 +15,7 @@ export type WorkspaceAction =
       note: string
       at: string
     }
+  | { type: 'resolveIncident'; incidentId: string; at: string }
   | { type: 'togglePanel' }
 
 interface SendReplyInput {
@@ -38,6 +39,11 @@ export const actions = {
     type: 'sendReply',
     incidentId,
     ...input,
+    at,
+  }),
+  resolveIncident: (incidentId: string, at: string = NOW): WorkspaceAction => ({
+    type: 'resolveIncident',
+    incidentId,
     at,
   }),
   togglePanel: (): WorkspaceAction => ({ type: 'togglePanel' }),

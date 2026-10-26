@@ -79,11 +79,11 @@ function IncidentView({ incident }: IncidentViewProps) {
     <>
       <IncidentHeader incident={incident} data={data} onCollapse={() => dispatch(actions.togglePanel())} />
       <NextStepCard
-        nextStep={incident.nextStep}
-        owner={incident.owner}
-        canAssign={canAct}
+        incident={incident}
+        canAct={canAct}
         onAssign={() => dispatch(actions.assignToMe(incident.id))}
         onAction={handleNextStepAction}
+        onResolve={() => dispatch(actions.resolveIncident(incident.id))}
       />
       <div className="flex min-h-0 flex-1">
         <div className="flex min-w-0 flex-1 flex-col">

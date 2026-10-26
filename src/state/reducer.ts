@@ -2,7 +2,13 @@
 import { HERO_INCIDENT_ID, SEED } from '@/data/seed'
 import { CURRENT_AGENT } from '@/domain/constants'
 import { getIncident, getRoute } from '@/domain/lookup'
-import { getCallingDriverStep, getFollowUpStep, getStepDoneStep, getStepLogText } from '@/domain/next-step'
+import {
+  getCallingDriverStep,
+  getFollowUpStep,
+  getResolvedStep,
+  getStepDoneStep,
+  getStepLogText,
+} from '@/domain/next-step'
 import type { AgentActivity, Incident, WorkspaceData } from '@/domain/types'
 import type { WorkspaceAction } from './actions'
 
@@ -77,7 +83,33 @@ function sendReply(state: WorkspaceState, action: Extract<WorkspaceAction, { typ
   }
 }
 
+function resolveIncident(
+  state: WorkspaceState,
+  action: Extract<WorkspaceAction, { type: 'resolveIncident' }>,
+): WorkspaceState {
+  const next = updateIncident(state, action.incidentId, (incident) => {
+    if (incident.status !== 'monitoring') return incident
+    return {
+      ...incident,
+      status: 'resolved',
+      nextStep: getResolvedStep(),
+      activity: withActivity(incident, [{ kind: 'step', at: action.at, author: CURRENT_AGENT, text: 'Marked resolved' }]),
+    }
+  })
+  // With nothing left open, the panel falls back to the no-selection hint.
+  const anyOpen = next.data.incidents.some((incident) => incident.status === 'open')
+  return anyOpen ? next : { ...next, selectedIncidentId: null }
+}
+
+/** Resolved incidents are read-only: every action on them is ignored. */
+function isResolved(state: WorkspaceState, incidentId: string): boolean {
+  return getIncident(state.data, incidentId)?.status === 'resolved'
+}
+
 export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction): WorkspaceState {
+  const targetId = 'incidentId' in action ? action.incidentId : null
+  if (action.type !== 'selectIncident' && targetId && isResolved(state, targetId)) return state
+
   switch (action.type) {
     case 'selectIncident':
       return { ...state, selectedIncidentId: action.incidentId, panelCollapsed: false }
@@ -122,6 +154,9 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
 
     case 'sendReply':
       return sendReply(state, action)
+
+    case 'resolveIncident':
+      return resolveIncident(state, action)
 
     case 'togglePanel':
       return { ...state, panelCollapsed: !state.panelCollapsed }

@@ -78,8 +78,9 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
   const route = getRoute(data, incident.routeId)
   const recipients = getIncidentContacts(data, incident).filter((contact) => !contact.answered)
   const selectedIds = recipients.filter((contact) => !excludedIds.includes(contact.id)).map((contact) => contact.id)
+  const isLocked = incident.status === 'resolved'
   const sendBlocker = getSendBlocker(recipients.length, selectedIds.length, reply)
-  const canSend = Boolean(onSend) && sendBlocker === null
+  const canSend = Boolean(onSend) && !isLocked && sendBlocker === null
   const sendLabel =
     recipients.length > 0 ? `Send to ${pluralize(selectedIds.length, 'contact')} (simulated)` : 'Send (simulated)'
 
@@ -96,6 +97,7 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
           value={note}
           onChange={(event) => setNote(event.target.value)}
           placeholder="What happened?"
+          disabled={isLocked}
           className="min-h-8.5 resize-none bg-surface-subtle px-2.5 py-1.75 text-sm focus-visible:bg-card md:text-sm"
         />
       </div>
@@ -113,6 +115,7 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
                   name={contact.senderName ?? contact.phone}
                   detail={getStopLabel(route, contact.linkedStopId) ?? getSourceLabel(contact.sourceRole)}
                   selected={!excludedIds.includes(contact.id)}
+                  disabled={isLocked}
                   onToggle={() => toggleRecipient(contact.id)}
                 />
               ))}
@@ -125,13 +128,16 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
             rows={2}
             value={reply}
             onChange={(event) => setReply(event.target.value)}
+            disabled={isLocked}
             className="min-h-0 resize-none bg-surface-subtle px-2.5 py-2 text-sm leading-normal focus-visible:bg-card md:text-sm"
           />
         </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2.5 pl-21">
-        {confirmation ? (
+        {isLocked ? (
+          <p className="text-xs text-soft-foreground">Resolved. Actions are disabled.</p>
+        ) : confirmation ? (
           <p role="status" className="inline-flex items-center gap-1.5 text-xs font-medium">
             <Check aria-hidden className="size-3.5" />
             {confirmation}
@@ -143,7 +149,7 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
           {sendBlocker && recipients.length > 0 && (
             <span className="text-xs text-soft-foreground">{sendBlocker}</span>
           )}
-          <Button variant="outline" size="md" onClick={handleAddNote} disabled={!onAddNote || !note.trim()}>
+          <Button variant="outline" size="md" onClick={handleAddNote} disabled={!onAddNote || isLocked || !note.trim()}>
             Add note
           </Button>
           <Button size="md" onClick={handleSend} disabled={!canSend} className="font-semibold">

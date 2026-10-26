@@ -182,3 +182,57 @@ describe('secondary incidents are actionable', () => {
     expect(withoutReply).toEqual(['incident-unknown'])
   })
 })
+
+describe('resolveIncident', () => {
+  const sent = run(
+    actions.sendReply(HERO_INCIDENT_ID, { contactIds: ROUTE_14_CONTACTS, reply: ROUTE_14_REPLY, note: '' }),
+  )
+
+  it('only resolves incidents in Monitoring', () => {
+    const initial = createInitialState()
+    expect(workspaceReducer(initial, actions.resolveIncident(HERO_INCIDENT_ID))).toEqual(initial)
+  })
+
+  it('resolves, logs it and moves the incident to the bottom', () => {
+    const resolved = workspaceReducer(sent, actions.resolveIncident(HERO_INCIDENT_ID))
+    expect(hero(resolved).status).toBe('resolved')
+    expect(hero(resolved).nextStep.label).toBe('Resolved.')
+    expect(timelineTitles(resolved).at(-1)).toBe('Marked resolved')
+    expect(sortIncidents(resolved.data).at(-1)?.id).toBe(HERO_INCIDENT_ID)
+    expect(resolved.selectedIncidentId).toBe(HERO_INCIDENT_ID)
+  })
+
+  it('ignores every action on a resolved incident', () => {
+    const resolved = workspaceReducer(sent, actions.resolveIncident(HERO_INCIDENT_ID))
+    for (const action of [
+      actions.assignToMe(HERO_INCIDENT_ID),
+      actions.logCall(HERO_INCIDENT_ID),
+      actions.addNote(HERO_INCIDENT_ID, 'Late note'),
+    ]) {
+      expect(workspaceReducer(resolved, action)).toBe(resolved)
+    }
+  })
+
+  it('clears the selection once no incident is open', () => {
+    const allMonitoring = SEED.incidents.filter((incident) => incident.replyTemplate)
+    let state = createInitialState()
+    for (const incident of allMonitoring) {
+      state = workspaceReducer(
+        state,
+        actions.sendReply(incident.id, { contactIds: incident.contactIds, reply: 'On it.', note: '' }),
+      )
+    }
+    // The unknown number can't be replied to, so close it out by hand for this test.
+    state = {
+      ...state,
+      data: {
+        ...state.data,
+        incidents: state.data.incidents.map((incident) =>
+          incident.id === 'incident-unknown' ? { ...incident, status: 'monitoring' as const } : incident,
+        ),
+      },
+    }
+    state = workspaceReducer(state, actions.resolveIncident(HERO_INCIDENT_ID))
+    expect(state.selectedIncidentId).toBeNull()
+  })
+})

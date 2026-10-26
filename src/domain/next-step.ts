@@ -36,3 +36,8 @@ export function getStepLogText(label: string): string {
 export function getStepDoneStep(label: string): NextStep {
   return { label, reason: 'Done (simulated). Reply to contacts to move to Monitoring.' }
 }
+
+/** After "Mark resolved": nothing left to do. */
+export function getResolvedStep(): NextStep {
+  return { label: 'Resolved.', reason: 'No further action needed. Actions are disabled.' }
+}
