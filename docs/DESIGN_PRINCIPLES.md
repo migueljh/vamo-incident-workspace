@@ -57,6 +57,6 @@ Target width: 1280 to 1440px. Below 1280px, route context moves under the timeli
 
 ## Empty and edge states
 
-- Unknown number incident: shows "No matching order found" and a "Link to an order" next step. Not interactive.
+- Unknown number incident: shows "No matching order found" and an "Ask for their name or order number" next step. It can only be replied to (no assign or next-step action) and stays "Needs linking"; linking is out of scope.
 - Incident without route context: the route section is hidden, not shown empty.
 - No incident selected: the panel shows a short hint to pick one from the queue.

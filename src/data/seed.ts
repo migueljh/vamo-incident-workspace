@@ -263,7 +263,7 @@ const INCIDENTS: Incident[] = [
     status: 'open',
     nextStep: {
       label: 'Update address and notify driver before arrival.',
-      reason: 'Sofia L. says the apartment is 4B, not 4D. Driver arrives at 12:12 PM ET.',
+      reason: 'Sofia L. says the apartment is 4B, not 4D.',
       action: 'log_step',
     },
     deadline: { kind: 'driver_arrives', at: etTime('12:12') },
@@ -283,7 +283,7 @@ const INCIDENTS: Incident[] = [
     status: 'open',
     nextStep: {
       label: 'Check route assignment in admin.',
-      reason: "Jamal R. can't see his route in the app. Route starts at 12:55 PM ET.",
+      reason: "Jamal R. called: the route doesn't show in his app.",
       action: 'log_step',
     },
     deadline: { kind: 'route_starts', at: etTime('12:55') },
@@ -338,10 +338,12 @@ const INCIDENTS: Incident[] = [
     contactIds: ['contact-unknown'],
     status: 'open',
     nextStep: {
-      label: 'Link to an order.',
-      reason: 'No matching order found for (555) 013-2291.',
+      label: 'Ask for their name or order number.',
+      reason: 'Then link the message to the right order.',
     },
     urgency: [{ kind: 'fact', text: 'no matching order found' }],
+    // Reply only: linking the message to an order is out of scope, so it stays Needs linking.
+    replyTemplate: 'Hi! Can you share your name or order number so we can check on your delivery?',
     activity: [],
   },
 ]

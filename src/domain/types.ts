@@ -149,7 +149,7 @@ export interface Incident {
   groupingReason?: string
   /** Next step after replying, when the seed knows better than the generic follow-up. */
   followUpStep?: NextStep
-  /** Default reply for the composer. The unknown number has none: it isn't actionable. */
+  /** Default reply for the composer. */
   replyTemplate?: string
   activity: AgentActivity[]
 }

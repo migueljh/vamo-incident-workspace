@@ -87,11 +87,6 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
   const canReply = recipients.length > 0 && !isLocked
   const sendBlocker = getSendBlocker(recipients.length, selectedIds.length, reply)
   const canSend = Boolean(onSend) && canReply && sendBlocker === null
-  const noteHint = isLocked
-    ? 'Incident resolved.'
-    : canReply
-      ? 'Saved with the reply, or add it now.'
-      : 'Add it to the timeline.'
   const confirmationText = confirmation && (
     <p role="status" className="inline-flex animate-fade items-center gap-1.5 text-xs font-medium">
       <Check aria-hidden className="size-3.5" />
@@ -112,11 +107,10 @@ export function Composer({ incident, data, ref, onSend, onAddNote }: ComposerPro
             rows={1}
             value={note}
             onChange={(event) => setNote(event.target.value)}
-            placeholder="What happened?"
+            placeholder={canReply ? 'What happened? Saved with the reply.' : 'What happened?'}
             disabled={isLocked}
             className="min-h-8.5 resize-none bg-surface-subtle px-2.5 py-1.75 text-sm focus-visible:bg-card md:text-sm"
           />
-          <p className="text-xs text-muted-foreground">{noteHint}</p>
         </div>
         <Button variant="outline" size="md" onClick={handleAddNote} disabled={!onAddNote || isLocked || !note.trim()}>
           Add note

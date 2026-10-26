@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { HERO_INCIDENT_ID, ROUTE_14_REPLY, SEED } from '@/data/seed'
 import { getIncident, getIncidentContacts } from '@/domain/lookup'
-import { countUnanswered, formatResolvedBy, getUrgencyReason, sortIncidents } from '@/domain/priority'
+import { countUnanswered, formatResolvedBy, getSeverity, getUrgencyReason, sortIncidents } from '@/domain/priority'
 import { getTimeline } from '@/domain/timeline'
 import type { Incident } from '@/domain/types'
 import { actions } from './actions'
@@ -180,9 +180,17 @@ describe('secondary incidents are actionable', () => {
     expect(incident && countUnanswered(getIncidentContacts(state.data, incident))).toBe(0)
   })
 
-  it('has a default reply for every incident except the unknown number', () => {
-    const withoutReply = SEED.incidents.filter((incident) => !incident.replyTemplate).map((incident) => incident.id)
-    expect(withoutReply).toEqual(['incident-unknown'])
+  it('has a default reply for every incident', () => {
+    expect(SEED.incidents.filter((incident) => !incident.replyTemplate)).toEqual([])
+  })
+
+  it('replies to the unknown number but keeps it Needs linking', () => {
+    const reply = getIncident(SEED, 'incident-unknown')?.replyTemplate ?? ''
+    const state = run(actions.sendReply('incident-unknown', { contactIds: ['contact-unknown'], reply, note: '' }))
+    const incident = getIncident(state.data, 'incident-unknown')
+    expect(incident?.status).toBe('monitoring')
+    expect(incident && countUnanswered(getIncidentContacts(state.data, incident))).toBe(0)
+    expect(incident && getSeverity(incident, state.data)).toBe('needs_linking')
   })
 })
 
@@ -224,16 +232,6 @@ describe('resolveIncident', () => {
         state,
         actions.sendReply(incident.id, { contactIds: incident.contactIds, reply: 'On it.', note: '' }),
       )
-    }
-    // The unknown number can't be replied to, so close it out by hand for this test.
-    state = {
-      ...state,
-      data: {
-        ...state.data,
-        incidents: state.data.incidents.map((incident) =>
-          incident.id === 'incident-unknown' ? { ...incident, status: 'monitoring' as const } : incident,
-        ),
-      },
     }
     state = workspaceReducer(state, actions.resolveIncident(HERO_INCIDENT_ID))
     expect(state.selectedIncidentId).toBeNull()

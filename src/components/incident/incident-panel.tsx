@@ -73,7 +73,7 @@ function IncidentView({ incident }: IncidentViewProps) {
   const { data } = state
   const route = getRoute(data, incident.routeId)
   const showRoute = hasRouteContext(route)
-  // Unknown numbers can't be acted on until they're linked to an order.
+  // Unknown numbers can only be replied to until they're linked to an order.
   const canAct = getSeverity(incident, data) !== 'needs_linking'
 
   return (
@@ -97,7 +97,7 @@ function IncidentView({ incident }: IncidentViewProps) {
             {/* Below 1280px the route context moves under the timeline. */}
             {showRoute && <RouteContext route={route} className="mx-5 mb-4.5 border-t border-line-soft pt-3.5 xl:hidden" />}
           </ScrollArea>
-          {canAct && incident.replyTemplate !== undefined && (
+          {incident.replyTemplate !== undefined && (
             <Composer
               ref={composerRef}
               incident={incident}
